@@ -9,9 +9,9 @@ class Usuario(AbstractUser):
     rol = models.CharField(max_length=10, choices=ROL_CHOICES)
     dni = models.CharField(max_length=20, blank=True, null=True)
     especialidad = models.CharField(max_length=100, blank=True, null=True)
-    matricula = models.CharField(max_length=50, blank=True, null=True)
+    email = models.EmailField(unique=True)
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']  # Si no querés usar username podés customizar más
+    REQUIRED_FIELDS = ['username']
 
     def __str__(self):
         return self.email
