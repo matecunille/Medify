@@ -1,5 +1,6 @@
 from django.urls import path
-from django.contrib.auth import views as auth_views
+from .views import ConsultaDetailView
 
 urlpatterns = [
+    path('<int:pk>/', ConsultaDetailView.as_view(), name='detalle'),
 ]

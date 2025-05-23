@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Consultas{% endblock %}
+
+{% block content %}
+    <h2>Consultas</h2>
+    <ul>
+        {% for consulta in consultas %}
+            <li>
+                <a href="{% url 'detalle' consulta.pk %}">
+                    {{ consulta.fecha }} - {{ consulta.paciente }}
+                </a>
+            </li>
+        {% empty %}
+            <li>No hay consultas.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

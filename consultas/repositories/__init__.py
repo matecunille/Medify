@@ -1,0 +1,3 @@
+from .ConsultaRepository import ConsultaRepository
+from .RecetaRepository import RecetaRepository
+from .TratamientoRepository import TratamientoRepository

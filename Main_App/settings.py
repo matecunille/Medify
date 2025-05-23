@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'usuarios',
     'consultas',
-    'turnos',
 ]
 
 AUTH_USER_MODEL = 'usuarios.Usuario'

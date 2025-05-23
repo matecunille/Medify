@@ -17,9 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from consultas.models import Receta, Consulta
+from consultas.views import ConsultaListView
+
 urlpatterns = [
+    path('', ConsultaListView.as_view(), name='consulta'),
     path('admin/', admin.site.urls),
     path('consultas/',include('consultas.urls')),
     path('usuarios/',include('usuarios.urls')),
-    path('turnos/',include('turnos.urls')),
 ]

@@ -1,3 +1,12 @@
-from django.shortcuts import render
+from django.views.generic import ListView, DetailView
+from .models import Consulta
 
-# Create your views here.
+class ConsultaListView(ListView):
+    model = Consulta
+    template_name = "consultas/lista.html"
+    context_object_name = "consultas"
+
+class ConsultaDetailView(DetailView):
+    model = Consulta
+    template_name = "consultas/detalle.html"
+    context_object_name = "consulta"
