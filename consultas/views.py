@@ -5,16 +5,22 @@ from .models import Consulta
 from .services.ConsultaService import ConsultaService
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from django.shortcuts import get_object_or_404
+from consultas.models import Consulta
 class ConsultaListView(LoginRequiredMixin, ListView):
-    model = Consulta
     template_name = "consultas/lista.html"
     context_object_name = "consultas"
 
+    def get_queryset(self):
+        return ConsultaService.listar_consultas()
+
 class ConsultaDetailView(LoginRequiredMixin, DetailView):
-    model = Consulta
     template_name = "consultas/detalle.html"
     context_object_name = "consulta"
+
+    def get_object(self, **kwargs):
+        consulta_id = self.kwargs.get("pk")
+        return get_object_or_404(Consulta, pk=consulta_id)
 
 @login_required
 def crear_consulta(request):

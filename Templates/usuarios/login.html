@@ -1,10 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Iniciar Sesión{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; background-color: #f8f9fa;">
+    <div class="card shadow-lg rounded-4 p-4" style="width: 100%; max-width: 420px;">
+        <h1 class="text-center mb-4 fw-bold" style="font-family: 'Segoe UI', sans-serif; font-size: 2.8rem; color: #343a40;">Medify</h1>
+        <form method="post" action="" novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                {% endfor %}
+            {% endfor %}
+            <div class="form-floating mb-3">
+                <input type="text" name="username" id="id_username" class="form-control rounded-3 shadow-sm" placeholder="Usuario" required autocomplete="username">
+                <label for="id_username">Usuario</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="password" name="password" id="id_password" class="form-control rounded-3 shadow-sm" placeholder="Contraseña" required autocomplete="current-password">
+                <label for="id_password">Contraseña</label>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 btn-lg mt-2">Iniciar sesión</button>
+        </form>
+        <div class="mt-3 text-center">
+            <a href="/usuarios/registro/" class="text-decoration-none">Registrate</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
