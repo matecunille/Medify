@@ -1,16 +1,29 @@
 from usuarios.repositories import UsuarioRepository
 
 class UsuarioService:
-    @staticmethod
-    def registrar_usuario(username, password, email=None, **extra_fields):
-        return UsuarioRepository.crear_usuario(username, password, email, **extra_fields)
 
     @staticmethod
-    def autenticar_usuario(username, password):
-        usuario = UsuarioRepository.obtener_por_username(username)
-        if usuario and UsuarioRepository.verificar_password(usuario, password):
-            return usuario
-        return None
+    def obtener_todos():
+        return UsuarioRepository.obtener_todos()
+
+    @staticmethod
+    def crear_usuario(username, email, password, rol):
+        from usuarios.models import Usuario
+        if UsuarioRepository.obtener_por_username(username):
+            return 'usuario_duplicado'
+        if UsuarioService.buscar_por_email(email):
+            return 'email_duplicado'
+
+        try:
+            user = UsuarioRepository.crear_usuario(
+                username=username,
+                email=email,
+                password=password,
+                rol=rol
+            )
+            return user
+        except Exception:
+            return None
 
     @staticmethod
     def cambiar_contraseña(usuario, nueva_password):
@@ -26,8 +39,3 @@ class UsuarioService:
     def buscar_por_email(email):
         from usuarios.models import Usuario
         return Usuario.objects.filter(email=email).first()
-
-    @staticmethod
-    def verificar_credenciales(username, password):
-        usuario = UsuarioRepository.obtener_por_username(username)
-        return usuario if usuario and UsuarioRepository.verificar_password(usuario, password) else None

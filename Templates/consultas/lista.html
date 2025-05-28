@@ -3,8 +3,10 @@
 {% block title %}Consultas{% endblock %}
 
 {% block content %}
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
     <div class="container mt-4">
-        <h2 class="mb-4">Consultas</h2>
+        <h2 class="mb-4 mt-4">Consultas</h2>
+        <div id="calendar" class="mb-4 bg-white rounded shadow p-4"></div>
         {% if consultas %}
             <ul class="list-group">
                 {% for consulta in consultas %}
@@ -18,5 +20,19 @@
         {% else %}
             <div class="alert alert-info">No hay consultas.</div>
         {% endif %}
+    <script>
+          document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'es',
+            dateClick: function(info) {
+                const url = "{% url 'crear_consulta' %}?fecha=" + info.dateStr;
+                window.location.href = url;
+            }
+        });
+        calendar.render();
+    });
+    </script>
     </div>
 {% endblock %}

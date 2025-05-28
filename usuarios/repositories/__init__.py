@@ -1,1 +1,1 @@
-from UsuarioRepository import UsuarioRepository
+from .UsuarioRepository import UsuarioRepository

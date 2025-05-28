@@ -43,6 +43,10 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = 'usuarios.Usuario'
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -120,9 +124,9 @@ USE_I18N = True
 
 USE_TZ = True
 
-LOGIN_URL = 'login'  # Redirige a la página de login si no está autenticado
-LOGIN_REDIRECT_URL = 'home'  # A dónde redirigir después de loguearse (por ejemplo, home)
-LOGOUT_REDIRECT_URL = 'login'  # Redirige al login después de hacer logout
+LOGIN_URL = '/usuarios/login/'
+LOGIN_REDIRECT_URL = '/consultas/'
+LOGOUT_REDIRECT_URL = '/usuarios/login'  # Redirige al login después de hacer logout
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
