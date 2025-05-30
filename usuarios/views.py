@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect
 from django import forms
 from django.contrib.auth import login, authenticate, logout
@@ -12,36 +13,67 @@ from django.contrib import messages
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+class RegistroForm(forms.Form):
+    nombre = forms.CharField(label='Nombre',max_length=15)
+    apellido = forms.CharField(label='Apellido',max_length=15)
+    username = forms.CharField(label='Usuario', max_length=150)
+    email = forms.EmailField(label='Email')
+    password = forms.CharField(widget=forms.PasswordInput, label='Contraseña')
+    confirm_password = forms.CharField(widget=forms.PasswordInput, label='Confirmar contraseña')
+    rol = forms.ChoiceField(choices=Usuario.ROL_CHOICES, label='Rol')
+    dni = forms.CharField(label='DNI', max_length=20, required=False)
+    especialidad = forms.CharField(label='Especialidad', max_length=100, required=False)
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if UsuarioService.buscar_por_username(username):
+            raise ValidationError("Nombre de usuario ya está en uso.")
+        return username
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if UsuarioService.buscar_por_email(email):
+            raise ValidationError("Email ya está registrado.")
+        return email
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        confirm_password = cleaned_data.get('confirm_password')
+        rol = cleaned_data.get('rol')
+        especialidad = cleaned_data.get('especialidad')
+
+        if password and confirm_password and password != confirm_password:
+            raise ValidationError("Las contraseñas no coinciden")
+
+        if rol == 'medico' and not especialidad:
+            raise ValidationError("La especialidad es obligatoria para médicos")
+
+        return cleaned_data
+
 def registro_view(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
-        rol = request.POST.get('rol')
+    form = RegistroForm(request.POST or None)
 
-        if password != confirm_password:
-            messages.error(request, "¡Las contraseñas deben coincidir!")
-            return render(request, 'usuarios/registro.html')
-
-        resultado = UsuarioService.crear_usuario(
-            username=username,
-            email=email,
-            password=password,
-            rol=rol
+    if request.method == 'POST' and form.is_valid():
+        data = form.cleaned_data
+        user = UsuarioService.crear_usuario(
+            username=data['username'],
+            email=data['email'],
+            password=data['password'],
+            rol=data['rol'],
+            dni=data.get('dni'),
+            especialidad=data.get('especialidad') if data['rol'] == 'medico' else None,
+            first_name=data.get('nombre'),
+            last_name=data.get('apellido')
         )
-
-        if resultado == 'usuario_duplicado':
-            messages.error(request, "Nombre de usuario existente")
-        elif resultado == 'email_duplicado':
-            messages.error(request, "Email existente")
-        elif resultado is None:
+        if user is None:
             messages.error(request, "Error inesperado al crear el usuario")
-        elif isinstance(resultado, Usuario):
+        else:
             messages.success(request, "¡Usuario creado exitosamente!")
             return redirect('/usuarios/login/')
 
-    return render(request, 'usuarios/registro.html')
+    return render(request, 'usuarios/registro.html', {'form': form})
 class LoginForm(forms.Form):
     username = forms.CharField(label='Usuario', max_length=150)
     password = forms.CharField(widget=forms.PasswordInput, label='Contraseña')

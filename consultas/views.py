@@ -1,9 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
-from .models import Consulta
+from usuarios.services import UsuarioService
 from .services.ConsultaService import ConsultaService
-from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from consultas.models import Consulta
@@ -24,8 +23,6 @@ class ConsultaDetailView(LoginRequiredMixin, DetailView):
 
 @login_required
 def crear_consulta(request):
-
-    Usuario = get_user_model()
     if request.method == 'POST':
         fecha = request.POST.get('fecha')
         hora = request.POST.get('hora')
@@ -37,9 +34,10 @@ def crear_consulta(request):
 
         return redirect('lista_consultas')
 
+    medicospacientes = UsuarioService.obtener_todos()
     fecha_param = request.GET.get('fecha')
-    pacientes = Usuario.objects.filter(rol='paciente')
-    medicos = Usuario.objects.filter(rol='medico')
+    pacientes = medicospacientes.filter(rol='paciente')
+    medicos = medicospacientes.filter(rol='medico')
     context = {
         'fecha': fecha_param,
         'pacientes': pacientes,

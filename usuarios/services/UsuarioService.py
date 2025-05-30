@@ -7,21 +7,18 @@ class UsuarioService:
         return UsuarioRepository.obtener_todos()
 
     @staticmethod
-    def crear_usuario(username, email, password, rol):
-        from usuarios.models import Usuario
-        if UsuarioRepository.obtener_por_username(username):
-            return 'usuario_duplicado'
-        if UsuarioService.buscar_por_email(email):
-            return 'email_duplicado'
-
+    def crear_usuario(username, email, password, rol, **kwargs):
         try:
-            user = UsuarioRepository.crear_usuario(
+            return UsuarioRepository.crear_usuario(
                 username=username,
                 email=email,
                 password=password,
-                rol=rol
+                rol=rol,
+                dni=kwargs.get('dni'),
+                especialidad=kwargs.get('especialidad') if rol == 'medico' else None,
+                first_name=kwargs.get('first_name'),
+                last_name=kwargs.get('last_name')
             )
-            return user
         except Exception:
             return None
 
@@ -34,6 +31,10 @@ class UsuarioService:
     @staticmethod
     def actualizar_perfil(pk, **kwargs):
         UsuarioRepository.actualizar(pk, **kwargs)
+
+    @staticmethod
+    def buscar_por_username(username):
+        return UsuarioRepository.obtener_por_username(username)
 
     @staticmethod
     def buscar_por_email(email):
