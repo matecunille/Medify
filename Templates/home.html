@@ -13,31 +13,65 @@
 {% block content %}
 <div class="container mt-4">
     {% if user.rol == "medico" %}
+        <h2 class="mb-4"><strong>Sus Consultas</strong></h2>
 
-    {%  elif user.rol == "paciente"%}
-      <div class="row row-cols-1 row-cols-md-4 g-4">
+        {% if consultas %}
+            {% for consulta in consultas %}
+                <div class="row mb-3 p-3 border rounded">
+                    <div class="col-md-3">
+                        <strong>Paciente:</strong> {{ consulta.paciente }}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Fecha:</strong> {{ consulta.fecha|date:"d/m/Y" }}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Hora:</strong> {{ consulta.hora }}
+                    </div>
+                    <div class="col-md-3 text-end">
+                        <a href="{% url 'detalle_consulta' consulta.id %}" class="btn btn-sm btn-primary">
+                            Ver detalle
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="col">
+                <div class="alert alert-warning w-100 text-center">
+                    No tiene consultas agendadas.
+                </div>
+            </div>
+        {% endif %}
+
+    {% elif user.rol == "paciente" %}
+        <div class="row row-cols-1 row-cols-md-4 g-4">
+            <h2 class="mb-4"><strong>Médicos Disponibles</strong></h2>
             {% if medicos %}
                 {% for medico in medicos %}
-                  <div class="col mb-4">
-                    <div class="card h-100">
-                      <img src="{% if medico.foto %}{{ medico.foto.url }}{% else %}/static/img/default.jpg{% endif %}" class="card-img-top" alt="imagen doctor">
-                      <div class="card-body">
-                        <h5 class="card-title">{{ medico }}</h5>
-                        <p class="card-text">Doctor especializado en {{ medico.especialidad }}</p>
-                        <a href="{% url 'crear_consulta' %}?medico_id={{ medico.id }}&fecha={{ hoy }}" class="btn btn-primary">
-                            Agendar Consulta
-                        </a>
-                      </div>
+                    <div class="col mb-4">
+                        <div class="card h-100">
+                            <img src="{% if medico.foto %}{{ medico.foto.url }}{% else %}/static/img/default.jpg{% endif %}"
+                                 class="card-img-top" alt="imagen doctor">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ medico.user.get_full_name }}</h5>
+                                <p class="card-text">Doctor especializado en {{ medico.especialidad }}</p>
+                                <a href="{% url 'crear_consulta' %}?medico_id={{ medico.id }}&fecha={{ hoy }}"
+                                   class="btn btn-primary">
+                                    Agendar Consulta
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                  </div>
                 {% empty %}
-                  <div class="col">
-                    <div class="alert alert-warning w-100 text-center">No hay médicos disponibles en este momento.</div>
-                  </div>
+                    <div class="col">
+                        <div class="alert alert-warning w-100 text-center">
+                            No hay médicos disponibles en este momento.
+                        </div>
+                    </div>
                 {% endfor %}
             {% else %}
                 <p>No hay médicos disponibles en este momento.</p>
             {% endif %}
+        </div>
     {% endif %}
 </div>
 {% endblock %}

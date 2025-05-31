@@ -21,6 +21,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.urls import path, include
 
+from consultas.services import ConsultaService
 from usuarios.services import UsuarioService
 
 
@@ -28,7 +29,8 @@ from usuarios.services import UsuarioService
 def home(request):
     medicos = UsuarioService.obtener_medicos()
     pacientes = UsuarioService.obtener_pacientes()
-    return render(request, 'home.html', {'user': request.user,'medicos': medicos, 'pacientes': pacientes, 'hoy': date.today().isoformat()})
+    consultas = ConsultaService.obtener_consultas_por_medico(request.user.id)
+    return render(request, 'home.html', {'consultas': consultas,'user': request.user,'medicos': medicos, 'pacientes': pacientes, 'hoy': date.today().isoformat()})
 
 urlpatterns = [
     path('', home , name='home'),
