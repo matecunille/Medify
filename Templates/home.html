@@ -11,8 +11,33 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container mt-4">
     {% if user.rol == "medico" %}
+
+    {%  elif user.rol == "paciente"%}
+      <div class="row row-cols-1 row-cols-md-4 g-4">
+            {% if medicos %}
+                {% for medico in medicos %}
+                  <div class="col mb-4">
+                    <div class="card h-100">
+                      <img src="..." class="card-img-top" alt="imagen doctor">
+                      <div class="card-body">
+                        <h5 class="card-title">{{ medico }}</h5>
+                        <p class="card-text">Doctor especializado en {{ medico.especialidad }}</p>
+                        <a href="{% url 'crear_consulta' %}?medico_id={{ medico.id }}&fecha={{ hoy }}" class="btn btn-primary">
+                            Agendar Consulta
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                {% empty %}
+                  <div class="col">
+                    <div class="alert alert-warning w-100 text-center">No hay médicos disponibles en este momento.</div>
+                  </div>
+                {% endfor %}
+            {% else %}
+                <p>No hay médicos disponibles en este momento.</p>
+            {% endif %}
     {% endif %}
 </div>
 {% endblock %}

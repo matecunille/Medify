@@ -11,8 +11,9 @@ class ConsultaService:
 
     @staticmethod
     def crear_consulta(paciente, medico, fecha, hora, descripcion):
-        if ConsultaRepository.obtener_por_medico_y_fecha(medico.id, fecha, hora):
-            raise ValueError("El médico ya tiene un turno en ese horario.")
+        from usuarios.services import UsuarioService
+        medico = UsuarioService.obtener_por_id(medico)
+        paciente = UsuarioService.obtener_por_id(paciente)
         return ConsultaRepository.crear(paciente, medico, fecha, hora, descripcion)
 
     @staticmethod
@@ -26,3 +27,7 @@ class ConsultaService:
     @staticmethod
     def listar_consultas_por_paciente(paciente_id):
         return ConsultaRepository.obtener_por_paciente(paciente_id)
+
+    @staticmethod
+    def obtener_consultas_por_medico(medico_id):
+        return ConsultaRepository.obtener_por_medico(medico_id)

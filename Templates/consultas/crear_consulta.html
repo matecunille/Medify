@@ -4,45 +4,59 @@
 {% block title %}Crear Consulta{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2 class="mb-4">Crear Consulta</h2>
-    <form method="post">
-        {% csrf_token %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-md-8 col-lg-6 bg-white shadow rounded p-4">
 
-        <div class="mb-3">
-            <label for="fecha" class="form-label">Fecha</label>
-            <input type="date" class="form-control" id="fecha" name="fecha" value="{{ fecha }}" required>
-        </div>
+        <h2 class="text-center mb-4 fw-bold">Agendar Consulta</h2>
 
-        <div class="mb-3">
-            <label for="hora" class="form-label">Hora</label>
-            <input type="time" class="form-control" id="hora" name="hora" required>
-        </div>
+        {% if not horarios_disponibles %}
+            <div>
+                {% if medico_preseleccionado %}
+                    <div class="alert alert-warning text-center">
+                        No hay horarios disponibles para el Dr. {{ medico_preseleccionado.get_full_name }} el {{ fecha }}.
+                    </div>
+                {% else %}
+                    <div class="alert alert-danger text-center">
+                        No se encontró un médico válido. Volvé al <a href="{% url 'home' %}">inicio</a>.
+                    </div>
+                {% endif %}
+            </div>
+        {% else %}
+        <p class="text-center mb-4">
+            Agendando con <strong>Dr. {{ medico_preseleccionado.get_full_name }}</strong> el <strong>{{ fecha }}</strong>
+        </p>
+        <form method="post">
+            {% csrf_token %}
 
-        <div class="mb-3">
-            <label for="descripcion" class="form-label">Descripción</label>
-            <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required></textarea>
-        </div>
+            <input type="hidden" name="medico" value="{{ medico_preseleccionado.id }}">
 
-        <div class="mb-3">
-            <label for="paciente" class="form-label">Paciente</label>
-            <select class="form-select" id="paciente" name="paciente" required>
-                {% for paciente in pacientes %}
-                    <option value="{{ paciente.id }}">{{ paciente }}</option>
-                {% endfor %}
-            </select>
-        </div>
+            <div class="mb-3">
+                <label for="fecha" class="form-label">Fecha</label>
+                <input type="date" class="form-control" id="fecha" name="fecha" value="{{ fecha }}" readonly>
+            </div>
 
-        <div class="mb-3">
-            <label for="medico" class="form-label">Médico</label>
-            <select class="form-select" id="medico" name="medico" required>
-                {% for medico in medicos %}
-                    <option value="{{ medico.id }}">{{ medico }}</option>
-                {% endfor %}
-            </select>
-        </div>
+            <div class="mb-3">
+                <label for="hora" class="form-label">Hora</label>
+                <select class="form-select" id="hora" name="hora" required>
+                    <option value="" disabled selected>Seleccionar horario</option>
+                    {% for turno in horarios_disponibles %}
+                        <option value="{{ turno }}">{{ turno }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-        <button type="submit" class="btn btn-primary">Guardar</button>
-    </form>
+            <div class="mb-3">
+                <label for="descripcion" class="form-label">Descripción</label>
+                <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required></textarea>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'home' %}" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-primary" {% if not horarios_disponibles %}disabled{% endif %}>Guardar</button>
+            </div>
+        </form>
+        {% endif %}
+
+    </div>
 </div>
 {% endblock %}

@@ -14,18 +14,21 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from datetime import date
+
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.urls import path, include
 
+from usuarios.services import UsuarioService
+
+
 @login_required
 def home(request):
-
-    context = {
-        'user' : request.user
-    }
-    return render(request, 'home.html',context)
+    medicos = UsuarioService.obtener_medicos()
+    pacientes = UsuarioService.obtener_pacientes()
+    return render(request, 'home.html', {'user': request.user,'medicos': medicos, 'pacientes': pacientes, 'hoy': date.today().isoformat()})
 
 urlpatterns = [
     path('', home , name='home'),

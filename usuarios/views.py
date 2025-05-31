@@ -87,18 +87,13 @@ def login_usuario(request):
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
 
-            print(username,password)
-
             user = authenticate(request, username=username, password=password)
-            print(user.__str__())
+
             if user is not None:
                 login(request, user)
-                return redirect('/consultas')
+                return redirect('home')
             else:
                 messages.error(request, "Credenciales inválidas")
                 return redirect('/usuarios/login')
-        else:
-            print("⚠️ Formulario inválido")
-            print(f"Errores: {form.errors}")
 
     return render(request, 'usuarios/login.html', {'form': form})

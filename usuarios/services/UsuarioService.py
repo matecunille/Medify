@@ -1,4 +1,6 @@
+from consultas.services.ConsultaService import ConsultaService
 from usuarios.repositories import UsuarioRepository
+from consultas.models import HORARIOS_CHOICES
 
 class UsuarioService:
 
@@ -40,3 +42,22 @@ class UsuarioService:
     def buscar_por_email(email):
         from usuarios.models import Usuario
         return Usuario.objects.filter(email=email).first()
+
+    @staticmethod
+    def obtener_medicos():
+        return UsuarioRepository.obtener_todos().filter(rol='medico')
+
+    @staticmethod
+    def obtener_pacientes():
+        return UsuarioRepository.obtener_todos().filter(rol='paciente')
+
+    @staticmethod
+    def obtener_por_id(usuario_id):
+        return UsuarioRepository.obtener_por_id(usuario_id)
+
+    @staticmethod
+    def obtener_horarios_disponibles(medico_id, fecha_param):
+        consultas_ocupadas = ConsultaService.obtener_consultas_por_medico(medico_id=medico_id).filter(fecha=fecha_param)
+        horarios_ocupados = [consulta.hora for consulta in consultas_ocupadas]
+        turnos_disponibles = [hora for hora, _ in HORARIOS_CHOICES if hora not in horarios_ocupados]
+        return turnos_disponibles

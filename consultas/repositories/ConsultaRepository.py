@@ -28,13 +28,18 @@ class ConsultaRepository:
         Consulta.objects.filter(pk=pk).update(**kwargs)
 
     @staticmethod
-    def obtener_por_medico_y_fecha(medico_id, fecha, hora):
+    def obtener_por_medico_y_fecha(medico_id, fecha):
         return Consulta.objects.filter(
             medico_id=medico_id,
-            fecha=fecha,
-            hora=hora
-        ).exists()
+            fecha=fecha
+        )
 
     @staticmethod
     def obtener_por_paciente(paciente_id):
         return Consulta.objects.filter(paciente_id=paciente_id).order_by('-fecha', '-hora')
+
+    @staticmethod
+    def obtener_por_medico(medico_id):
+        return Consulta.objects.filter(
+            medico_id=medico_id
+        )

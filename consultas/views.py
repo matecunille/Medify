@@ -27,20 +27,29 @@ def crear_consulta(request):
         fecha = request.POST.get('fecha')
         hora = request.POST.get('hora')
         descripcion = request.POST.get('descripcion')
-        paciente_id = request.POST.get('paciente')
+        paciente_id = request.user.id
         medico_id = request.POST.get('medico')
 
-        ConsultaService.crear_consulta(fecha, hora, descripcion, paciente_id, medico_id)
+        ConsultaService.crear_consulta(fecha=fecha,hora= hora,descripcion= descripcion, paciente= paciente_id,medico= medico_id)
 
-        return redirect('lista_consultas')
+        return redirect('home')
 
-    medicospacientes = UsuarioService.obtener_todos()
     fecha_param = request.GET.get('fecha')
-    pacientes = medicospacientes.filter(rol='paciente')
-    medicos = medicospacientes.filter(rol='medico')
+    medico_id = request.GET.get('medico_id')
+    medico_preseleccionado = None
+    horarios_disponibles = []
+
+    if medico_id and fecha_param:
+            medico_preseleccionado = UsuarioService.obtener_por_id(medico_id)
+            print('Medico: ' + medico_preseleccionado.first_name)
+            if medico_preseleccionado.rol != "medico":
+                medico_preseleccionado = None
+            else:
+                horarios_disponibles = UsuarioService.obtener_horarios_disponibles(medico_id, fecha_param)
+                print('Horarios: ' + horarios_disponibles.__str__())
     context = {
         'fecha': fecha_param,
-        'pacientes': pacientes,
-        'medicos': medicos
+        'medico_preseleccionado': medico_preseleccionado,
+        'horarios_disponibles': horarios_disponibles,
     }
     return render(request, 'consultas/Crear_consulta.html', context)
