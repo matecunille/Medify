@@ -1,11 +1,24 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Detalle de Consulta{% endblock %}
 
 {% block content %}
-  <h2>Consulta de {{ consulta.paciente }}</h2>
-  <p><strong>Médico:</strong> {{ consulta.medico }}</p>
-  <p><strong>Fecha:</strong> {{ consulta.fecha }}</p>
-  <p><strong>Hora:</strong> {{ consulta.hora }}</p>
-  <p><strong>Descripción:</strong> {{ consulta.descripcion }}</p>
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Detalle de la Consulta</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Paciente:</strong> {{ consulta.paciente.get_full_name }}</p>
+            <p><strong>Médico:</strong> Dr. {{ consulta.medico.get_full_name }}</p>
+            <p><strong>Fecha:</strong> {{ consulta.fecha }}</p>
+            <p><strong>Hora:</strong> {{ consulta.hora }}</p>
+            <p><strong>Descripción:</strong> {{ consulta.descripcion }}</p>
+        </div>
+        <div class="card-footer text-end">
+            <a href="{% url 'lista_consultas' %}" class="btn btn-secondary">Volver</a>
+        </div>
+    </div>
+</div>
 {% endblock %}

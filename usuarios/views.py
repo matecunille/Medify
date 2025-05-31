@@ -14,6 +14,30 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
+class UsuarioForm(forms.ModelForm):
+    first_name = forms.CharField(label='Nombre', max_length=30, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    last_name = forms.CharField(label='Apellido', max_length=30, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    username = forms.CharField(label='Usuario', max_length=150, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    email = forms.EmailField(label='Email', widget=forms.EmailInput(attrs={'class': 'form-control'}))
+    dni = forms.CharField(label='DNI', max_length=20, required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    foto = forms.ImageField(label='Foto de perfil', required=False, widget=forms.FileInput(attrs={'class': 'form-control'}))
+
+    class Meta:
+        model = Usuario
+        exclude = ['password', 'rol']
+        fields = ['foto', 'first_name', 'last_name', 'username', 'email', 'dni']
+
+def perfil_view(request):
+    if request.method == 'POST':
+        form = UsuarioForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "¡Perfil actualizado exitosamente!")
+            return redirect('home')
+    else:
+        form = UsuarioForm(instance=request.user)
+    return render(request, 'usuarios/perfil.html', {'form': form})
+
 class RegistroForm(forms.Form):
     nombre = forms.CharField(label='Nombre',max_length=15)
     apellido = forms.CharField(label='Apellido',max_length=15)
@@ -74,6 +98,7 @@ def registro_view(request):
             return redirect('/usuarios/login/')
 
     return render(request, 'usuarios/registro.html', {'form': form})
+
 class LoginForm(forms.Form):
     username = forms.CharField(label='Usuario', max_length=150)
     password = forms.CharField(widget=forms.PasswordInput, label='Contraseña')

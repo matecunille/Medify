@@ -1,11 +1,13 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.utils.decorators import method_decorator
 from django.views.generic import ListView, DetailView
 from usuarios.services import UsuarioService
 from .services.ConsultaService import ConsultaService
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from consultas.models import Consulta
+
 class ConsultaListView(LoginRequiredMixin, ListView):
     template_name = "consultas/lista.html"
     context_object_name = "consultas"
@@ -13,13 +15,16 @@ class ConsultaListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return ConsultaService.listar_consultas()
 
-class ConsultaDetailView(LoginRequiredMixin, DetailView):
+@method_decorator(login_required, name='dispatch')
+class ConsultaDetailView(DetailView):
+    model = Consulta
     template_name = "consultas/detalle.html"
     context_object_name = "consulta"
 
-    def get_object(self, **kwargs):
-        consulta_id = self.kwargs.get("pk")
-        return get_object_or_404(Consulta, pk=consulta_id)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['usuario'] = self.request.user
+        return context
 
 @login_required
 def crear_consulta(request):

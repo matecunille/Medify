@@ -11,6 +11,7 @@ class Usuario(AbstractUser):
     dni = models.CharField(max_length=20, blank=True, null=True)
     especialidad = models.CharField(max_length=100, blank=True, null=True)
     email = models.EmailField(unique=True)
+    foto = models.ImageField(upload_to='usuarios/fotos/', blank=True, null=True)
     USERNAME_FIELD = 'username'
 
     def __str__(self):

@@ -20,7 +20,7 @@
                 {% for medico in medicos %}
                   <div class="col mb-4">
                     <div class="card h-100">
-                      <img src="..." class="card-img-top" alt="imagen doctor">
+                      <img src="{% if medico.foto %}{{ medico.foto.url }}{% else %}/static/img/default.jpg{% endif %}" class="card-img-top" alt="imagen doctor">
                       <div class="card-body">
                         <h5 class="card-title">{{ medico }}</h5>
                         <p class="card-text">Doctor especializado en {{ medico.especialidad }}</p>
