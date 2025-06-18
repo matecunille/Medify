@@ -1,62 +1,87 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Crear Consulta{% endblock %}
+{% block title %}Agendar Consulta{% endblock %}
 
 {% block content %}
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
-    <div class="col-md-8 col-lg-6 bg-white shadow rounded p-4">
-
-        <h2 class="text-center mb-4 fw-bold">Agendar Consulta</h2>
-
-        {% if not horarios_disponibles %}
-            <div>
-                {% if medico_preseleccionado %}
-                    <div class="alert alert-warning text-center">
-                        No hay horarios disponibles para el Dr. {{ medico_preseleccionado.get_full_name }} el {{ fecha }}.
-                    </div>
+    <div class="col-md-8 col-lg-6">
+        <div class="card form-card mb-4 shadow-sm">
+            <div class="card-header">
+                    <h4 class="mb-0 text-white text-center">
+                        <i class="bi bi-calendar2-plus-fill me-2"></i>Agendar consulta
+                    </h4>
+            </div>
+            <div class="card-body form-section">
+                {% if not horarios_disponibles %}
+                    {% if medico_preseleccionado %}
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            No hay horarios disponibles para el Dr. {{ medico_preseleccionado.get_full_name }} el {{ fecha }}.
+                        </div>
+                    {% else %}
+                        <div class="alert alert-danger">
+                            <i class="bi bi-x-circle me-2"></i>
+                            No se encontró un médico válido. 
+                            <hr>
+                            <a href="{% url 'home' %}" class="btn btn-outline-danger">Volver al inicio</a>
+                        </div>
+                    {% endif %}
                 {% else %}
-                    <div class="alert alert-danger text-center">
-                        No se encontró un médico válido. Volvé al <a href="{% url 'home' %}">inicio</a>.
+                    <div class="text-center">
+                        <img src="{% if medico_preseleccionado.foto %}{{ medico_preseleccionado.foto.url }}{% else %}{% static 'img/default.jpg' %}{% endif %}"
+                             class="rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;"
+                             alt="Foto del médico">
+                        <h5>Dr. {{ medico_preseleccionado.get_full_name }}</h5>
+                        <p class="text-muted">{{ medico_preseleccionado.especialidad }}</p>
                     </div>
+
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        <input type="hidden" name="medico" value="{{ medico_preseleccionado.id }}">
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-calendar3 me-2"></i>Fecha
+                            </label>
+                            <input type="date" class="form-control" name="fecha" value="{{ fecha }}" readonly>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-clock me-2"></i>Hora
+                            </label>
+                            <select class="form-select" name="hora" required>
+                                <option value="" disabled selected>Seleccionar horario</option>
+                                {% for turno in horarios_disponibles %}
+                                    <option value="{{ turno }}">{{ turno }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">
+                                Por favor seleccione un horario
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-chat-left-text me-2"></i>Motivo de la consulta
+                            </label>
+                            <textarea class="form-control" name="descripcion" rows="3" required 
+                                      placeholder="Describe brevemente el motivo de tu consulta"></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-calendar-check me-2"></i>Confirmar turno
+                            </button>
+                        </div>
+                    </form>
                 {% endif %}
             </div>
-        {% else %}
-        <p class="text-center mb-4">
-            Agendando con <strong>Dr. {{ medico_preseleccionado.get_full_name }}</strong> el <strong>{{ fecha }}</strong>
-        </p>
-        <form method="post">
-            {% csrf_token %}
-
-            <input type="hidden" name="medico" value="{{ medico_preseleccionado.id }}">
-
-            <div class="mb-3">
-                <label for="fecha" class="form-label">Fecha</label>
-                <input type="date" class="form-control" id="fecha" name="fecha" value="{{ fecha }}" readonly>
-            </div>
-
-            <div class="mb-3">
-                <label for="hora" class="form-label">Hora</label>
-                <select class="form-select" id="hora" name="hora" required>
-                    <option value="" disabled selected>Seleccionar horario</option>
-                    {% for turno in horarios_disponibles %}
-                        <option value="{{ turno }}">{{ turno }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label for="descripcion" class="form-label">Descripción</label>
-                <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required></textarea>
-            </div>
-
-            <div class="d-flex justify-content-between">
-                <a href="{% url 'home' %}" class="btn btn-secondary">Cancelar</a>
-                <button type="submit" class="btn btn-primary" {% if not horarios_disponibles %}disabled{% endif %}>Guardar</button>
-            </div>
-        </form>
-        {% endif %}
-
+        </div>
     </div>
 </div>
 {% endblock %}

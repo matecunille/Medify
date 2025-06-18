@@ -1,4 +1,5 @@
 from consultas.repositories import ConsultaRepository
+from consultas.models import ESTADO_CANCELADO
 
 class ConsultaService:
     @staticmethod
@@ -31,3 +32,9 @@ class ConsultaService:
     @staticmethod
     def obtener_consultas_por_medico(medico_id):
         return ConsultaRepository.obtener_por_medico(medico_id)
+    
+    @staticmethod
+    def cancelar_consulta(consulta):
+        consulta.estado = ESTADO_CANCELADO
+        ConsultaRepository.actualizar(consulta.pk, estado=consulta.estado)
+        return

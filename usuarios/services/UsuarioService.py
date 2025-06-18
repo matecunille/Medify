@@ -1,6 +1,7 @@
 from consultas.services.ConsultaService import ConsultaService
 from usuarios.repositories import UsuarioRepository
 from consultas.models import HORARIOS_CHOICES
+from ..repositories.EspecialidadRepository import EspecialidadRepository
 
 class UsuarioService:
 
@@ -61,3 +62,14 @@ class UsuarioService:
         horarios_ocupados = [consulta.hora for consulta in consultas_ocupadas]
         turnos_disponibles = [hora for hora, _ in HORARIOS_CHOICES if hora not in horarios_ocupados]
         return turnos_disponibles
+
+    @staticmethod
+    def crear_usuario(data):
+        # Si es médico, obtener la especialidad
+        if data.get('rol') == 'medico' and data.get('especialidad_id'):
+            especialidad = EspecialidadRepository.get_by_id(data['especialidad_id'])
+            if not especialidad:
+                return None
+            data['especialidad'] = especialidad
+            
+        return UsuarioRepository.create_usuario(data)

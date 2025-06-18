@@ -27,11 +27,27 @@ class UsuarioRepository:
         return check_password(raw_password, usuario.password)
 
     @staticmethod
-    def crear_usuario(username, password, email=None, **extra_fields):
-        hashed_password = make_password(password)
-        return Usuario.objects.create(
-            username=username,
-            password=hashed_password,
-            email=email,
-            **extra_fields
-        )
+    def crear_usuario(data):
+        try:
+            # Primero creamos el usuario sin la especialidad
+            hashed_password = make_password(data['password'])
+            usuario = Usuario.objects.create(
+                username=data['username'],
+                password=hashed_password,
+                email=data['email'],
+                first_name=data['first_name'],
+                last_name=data['last_name'],
+                rol=data['rol'],
+                dni=data['dni'],
+                foto=data.get('foto')
+            )
+            
+            # Si es médico y tiene especialidad, la asignamos
+            if data['rol'] == 'medico' and 'especialidad' in data:
+                usuario.especialidad = data['especialidad']
+                usuario.save()
+                
+            return usuario
+        except Exception as e:
+            print(f"Error al crear usuario: {e}")
+            return None

@@ -1,77 +1,190 @@
 {% extends "base.html" %}
 
 {% block title %}
-    {% if user.rol == "medico" %}
-        Bienvenido, Dr {{ user.last_name }}
-    {% elif user.rol == "paciente" %}
-        Bienvenido, {{ user.first_name }}
-    {% else %}
-        Bienvenido
-    {% endif %}
+    Inicio - Medify
 {% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     {% if user.rol == "medico" %}
-        <h2 class="mb-4"><strong>Sus Consultas</strong></h2>
-
         {% if consultas %}
-            {% for consulta in consultas %}
-                <div class="row mb-3 p-3 border rounded">
-                    <div class="col-md-3">
-                        <strong>Paciente:</strong> {{ consulta.paciente }}
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+                {% for consulta in consultas %}
+                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <h5 class="card-title mb-1">{{ consulta.paciente.get_full_name }}</h5>
+                                        <p class="text-muted small mb-0">
+                                            <i class="bi bi-calendar-event me-1"></i>{{ consulta.fecha|date:"d/m/Y" }}
+                                        </p>
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">
+                                        <i class="bi bi-clock me-1"></i>{{ consulta.hora }}
+                                    </span>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="btn-group">
+                                        <a href="{% url 'detalle_consulta' consulta.id %}" class="btn btn-outline-primary">
+                                            <i class="bi bi-eye me-1"></i>Ver detalle
+                                        </a>
+                                    </div>
+                                    <div class="dropdown">
+                                        <button class="btn btn-link text-dark" type="button" data-bs-toggle="dropdown">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item" href="#"><i class="bi bi-calendar-x me-2"></i>Reprogramar</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="bi bi-chat-dots me-2"></i>Contactar</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-x-circle me-2"></i>Cancelar</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-3">
-                        <strong>Fecha:</strong> {{ consulta.fecha|date:"d/m/Y" }}
-                    </div>
-                    <div class="col-md-3">
-                        <strong>Hora:</strong> {{ consulta.hora }}
-                    </div>
-                    <div class="col-md-3 text-end">
-                        <a href="{% url 'detalle_consulta' consulta.id %}" class="btn btn-sm btn-primary">
-                            Ver detalle
-                        </a>
-                    </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
         {% else %}
-            <div class="col">
-                <div class="alert alert-warning w-100 text-center">
-                    No tiene consultas agendadas.
-                </div>
+            <div class="text-center py-5">
+                <i class="bi bi-calendar-x display-1 text-muted mb-3"></i>
+                <h4 class="text-muted">No tiene consultas pendientes</h4>
+                <p class="text-muted">Las consultas pendientes aparecerán aquí.</p>
             </div>
         {% endif %}
 
     {% elif user.rol == "paciente" %}
-        <div class="row row-cols-1 row-cols-md-4 g-4">
-            <h2 class="mb-4"><strong>Médicos Disponibles</strong></h2>
-            {% if medicos %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2><strong>Médicos Disponibles</strong></h2>
+                    <div class="d-flex gap-3">
+                        <div class="input-group" style="width: 300px;">
+                            <span class="input-group-text bg-white">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control border-start-0" id="searchInput"
+                                   placeholder="Buscar por nombre o especialidad...">
+                        </div>
+                        <select class="form-select" id="especialidadFilter" style="width: 200px;">
+                            <option value="">Todas las especialidades</option>
+                            {% for especialidad in especialidades %}
+                                <option value="{{ especialidad }}">{{ especialidad }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if medicos %}
+            <div class="row row-cols-1 row-cols-md-3 g-4" id="medicosGrid">
                 {% for medico in medicos %}
-                    <div class="col mb-4">
-                        <div class="card h-100">
-                            <img src="{% if medico.foto %}{{ medico.foto.url }}{% else %}/static/img/default.jpg{% endif %}"
-                                 class="card-img-top" alt="imagen doctor">
+                    <div class="col medico-card" 
+                         data-nombre="{{ medico.get_full_name|lower }}" 
+                         data-especialidad="{{ medico.especialidad|lower }}">
+                        <div class="card h-100 shadow-sm hover-shadow">
+                            <div class="position-relative">
+                                <img src="{% if medico.foto %}{{ medico.foto.url }}{% else %}/static/img/default.jpg{% endif %}"
+                                     class="card-img-top" alt="imagen doctor" style="height: 200px; object-fit: cover;">
+                                <div class="position-absolute bottom-0 start-0 w-100 bg-dark bg-opacity-50 text-white p-2">
+                                    <h5 class="card-title mb-0">Dr. {{ medico.get_full_name }}</h5>
+                                    <small>{{ medico.especialidad }}</small>
+                                </div>
+                            </div>
                             <div class="card-body">
-                                <h5 class="card-title">{{ medico.user.get_full_name }}</h5>
-                                <p class="card-text">Doctor especializado en {{ medico.especialidad }}</p>
-                                <a href="{% url 'crear_consulta' %}?medico_id={{ medico.id }}&fecha={{ hoy }}"
-                                   class="btn btn-primary">
-                                    Agendar Consulta
-                                </a>
+                                <p class="card-text">
+                                    <i class="bi bi-hospital me-2"></i>{{ medico.especialidad }}
+                                </p>
+                                <hr>
+                                <div class="d-grid">
+                                    <a href="{% url 'crear_consulta' %}?medico_id={{ medico.id }}&fecha={{ hoy }}"
+                                       class="btn btn-primary">
+                                        <i class="bi bi-calendar-plus me-2"></i>Agendar Consulta
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 {% empty %}
-                    <div class="col">
-                        <div class="alert alert-warning w-100 text-center">
-                            No hay médicos disponibles en este momento.
+                    <div class="col-12">
+                        <div class="text-center py-5">
+                            <i class="bi bi-emoji-frown display-1 text-muted mb-3"></i>
+                            <h4 class="text-muted">No hay médicos disponibles</h4>
+                            <p class="text-muted">Por favor, intentá más tarde o contacta con administración.</p>
                         </div>
                     </div>
                 {% endfor %}
-            {% else %}
-                <p>No hay médicos disponibles en este momento.</p>
-            {% endif %}
-        </div>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-emoji-frown display-1 text-muted mb-3"></i>
+                <h4 class="text-muted">No hay médicos disponibles</h4>
+                <p class="text-muted">Por favor, intentá más tarde o contacta con administración.</p>
+            </div>
+        {% endif %}
     {% endif %}
 </div>
+
+<style>
+    .hover-shadow:hover {
+        transform: translateY(-5px);
+        transition: transform 0.3s ease;
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        const especialidadFilter = document.getElementById('especialidadFilter');
+        const medicosCards = document.querySelectorAll('.medico-card');
+
+        function filterMedicos() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const especialidad = especialidadFilter.value.toLowerCase();
+
+            medicosCards.forEach(card => {
+                const nombre = card.dataset.nombre;
+                const cardEspecialidad = card.dataset.especialidad;
+                
+                const matchesSearch = nombre.includes(searchTerm) || 
+                                    cardEspecialidad.includes(searchTerm);
+                const matchesEspecialidad = !especialidad || 
+                                          cardEspecialidad === especialidad;
+
+                if (matchesSearch && matchesEspecialidad) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Mostrar mensaje si no hay resultados
+            const visibleCards = document.querySelectorAll('.medico-card[style=""]').length;
+            const noResultsMessage = document.querySelector('.no-results');
+            
+            if (visibleCards === 0) {
+                if (!noResultsMessage) {
+                    const message = document.createElement('div');
+                    message.className = 'col-12 text-center py-5 no-results';
+                    message.innerHTML = `
+                        <i class="bi bi-search display-1 text-muted mb-3"></i>
+                        <h4 class="text-muted">No se encontraron médicos</h4>
+                        <p class="text-muted">Intenta con otros filtros de búsqueda.</p>
+                    `;
+                    document.getElementById('medicosGrid').appendChild(message);
+                }
+            } else if (noResultsMessage) {
+                noResultsMessage.remove();
+            }
+        }
+
+        searchInput.addEventListener('input', filterMedicos);
+        especialidadFilter.addEventListener('change', filterMedicos);
+    });
+</script>
 {% endblock %}

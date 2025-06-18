@@ -12,8 +12,17 @@ HORARIOS_CHOICES = [
     ('16:00', '16:00'),
 ]
 
+ESTADO_CANCELADO = 'cancelada'
+
+ESTADOS_CHOICES = [
+    ('pendiente', 'Pendiente'),
+    ('concluida', 'Concluida'),
+    (ESTADO_CANCELADO, 'Cancelada'),
+]
+
 class Consulta(models.Model):
     fecha = models.DateField()
+    estado = models.CharField(max_length=10, choices=ESTADOS_CHOICES, default='pendiente')
     hora = models.CharField(max_length=5, choices=HORARIOS_CHOICES)
     descripcion = models.TextField()
     paciente = models.ForeignKey(

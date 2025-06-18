@@ -27,6 +27,14 @@ class ConsultaDetailView(DetailView):
         return context
 
 @login_required
+def cancelar_consulta(request, pk):
+    consulta = ConsultaService.obtener_consulta_por_id(pk)
+    if request.method == 'POST':
+        ConsultaService.cancelar_consulta(consulta)
+        return redirect('home')
+    return render(request, 'consultas/cancelar.html', {'consulta': consulta})
+
+@login_required
 def crear_consulta(request):
     if request.method == 'POST':
         fecha = request.POST.get('fecha')
@@ -51,10 +59,10 @@ def crear_consulta(request):
                 medico_preseleccionado = None
             else:
                 horarios_disponibles = UsuarioService.obtener_horarios_disponibles(medico_id, fecha_param)
-                print('Horarios: ' + horarios_disponibles.__str__())
+                
     context = {
         'fecha': fecha_param,
         'medico_preseleccionado': medico_preseleccionado,
         'horarios_disponibles': horarios_disponibles,
     }
-    return render(request, 'consultas/Crear_consulta.html', context)
+    return render(request, 'consultas/crear_consulta.html', context)
