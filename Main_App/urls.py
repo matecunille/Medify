@@ -16,21 +16,26 @@ Including another URLconf
 """
 from datetime import date
 
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.urls import path, include
 
+from consultas.models import ESTADO_CANCELADO
 from consultas.services import ConsultaService
 from usuarios.services import UsuarioService
+from usuarios.services.EspecialidadService import EspecialidadService
 
 
 @login_required
 def home(request):
     medicos = UsuarioService.obtener_medicos()
     pacientes = UsuarioService.obtener_pacientes()
-    consultas = ConsultaService.obtener_consultas_por_medico(request.user.id)
-    return render(request, 'home.html', {'consultas': consultas,'user': request.user,'medicos': medicos, 'pacientes': pacientes, 'hoy': date.today().isoformat()})
+    consultas = ConsultaService.obtener_consultas_por_medico(request.user.id).exclude(estado= ESTADO_CANCELADO)
+    especialidades = EspecialidadService.obtener_especialidades_activas()
+    return render(request, 'home.html', {'especialidades' : especialidades,'consultas': consultas,'user': request.user,'medicos': medicos, 'pacientes': pacientes, 'hoy': date.today().isoformat()})
 
 urlpatterns = [
     path('', home , name='home'),
@@ -39,7 +44,6 @@ urlpatterns = [
     path('usuarios/',include('usuarios.urls')),
 ]
 
-from django.conf import settings
-from django.conf.urls.static import static
-
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
