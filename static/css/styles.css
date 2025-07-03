@@ -70,7 +70,6 @@
     }
 }
 
-/* Estilos para formularios */
 .form-card {
     border: none;
     box-shadow: 0 0 20px rgba(0,0,0,0.1);
@@ -121,3 +120,26 @@
 .form-control:focus + .input-group-text {
     border-color: #6f42c1;
 }
+
+/* Nuevos estilos personalizados */
+.custom-purple-badge {
+    background-color: #6f42c1;
+    color: white;
+}
+
+.custom-outline-purple {
+    color: #6f42c1;
+    border: 1px solid #6f42c1;
+    transition: all 0.3s ease;
+}
+
+.custom-outline-purple:hover {
+    background-color: #6f42c1;
+    color: white;
+}
+
+.hover-shadow:hover {
+        transform: translateY(-5px);
+        transition: transform 0.3s ease;
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+    }

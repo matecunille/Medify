@@ -1,9 +1,8 @@
 from django.urls import path
-from .views import ConsultaDetailView, ConsultaListView, crear_consulta, cancelar_consulta
+from .views import  crear_consulta, cancelar_consulta, consulta_detalle
 
 urlpatterns = [
-    path('', ConsultaListView.as_view(), name='lista_consultas'),
-    path('<int:pk>/', ConsultaDetailView.as_view(), name='detalle_consulta'),
+    path('<int:pk>/', consulta_detalle, name='detalle_consulta'),
     path('<int:pk>/cancelar/', cancelar_consulta, name='cancelar_consulta'),
     path('crear/', crear_consulta, name='crear_consulta'),
 ]

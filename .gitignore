@@ -23,3 +23,6 @@ Thumbs.db
 
 # Media
 media/
+
+# env
+.env

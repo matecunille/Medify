@@ -8,13 +8,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from consultas.models import Consulta
 
-class ConsultaListView(LoginRequiredMixin, ListView):
-    template_name = "consultas/lista.html"
-    context_object_name = "consultas"
-
-    def get_queryset(self):
-        return ConsultaService.listar_consultas()
-
 @method_decorator(login_required, name='dispatch')
 class ConsultaDetailView(DetailView):
     model = Consulta
@@ -25,6 +18,18 @@ class ConsultaDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['usuario'] = self.request.user
         return context
+
+@login_required
+def consulta_detalle(request, pk):
+    consulta = get_object_or_404(Consulta, pk=pk)
+    if request.user != consulta.paciente and request.user != consulta.medico:
+        return redirect('home')
+    
+    context = {
+        'consulta': consulta,
+        'usuario': request.user
+    }
+    return render(request, 'consultas/detalle.html', context)
 
 @login_required
 def cancelar_consulta(request, pk):
