@@ -65,22 +65,7 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h2 class="home-title"><strong>Médicos Disponibles</strong></h2>
-                    <div class="d-flex gap-3">
-                        <div class="input-group" style="width: 300px;">
-                            <span class="input-group-text bg-white">
-                                <i class="bi bi-search"></i>
-                            </span>
-                            <input type="text" class="form-control border-start-0" id="searchInput"
-                                   placeholder="Buscar por nombre o especialidad...">
-                        </div>
-                        <select class="form-select" id="especialidadFilter" style="width: 200px;">
-                            <option value="">Todas las especialidades</option>
-                            {% for especialidad in especialidades %}
-                                <option value="{{ especialidad }}">{{ especialidad }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                    <h2 class="home-title text-purple"><strong>Médicos Disponibles</strong></h2>
                 </div>
             </div>
         </div>
@@ -133,55 +118,4 @@
         {% endif %}
     {% endif %}
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const searchInput = document.getElementById('searchInput');
-        const especialidadFilter = document.getElementById('especialidadFilter');
-        const medicosCards = document.querySelectorAll('.medico-card');
-
-        function filterMedicos() {
-            const searchTerm = searchInput.value.toLowerCase();
-            const especialidad = especialidadFilter.value.toLowerCase();
-
-            medicosCards.forEach(card => {
-                const nombre = card.dataset.nombre;
-                const cardEspecialidad = card.dataset.especialidad;
-                
-                const matchesSearch = nombre.includes(searchTerm) || 
-                                    cardEspecialidad.includes(searchTerm);
-                const matchesEspecialidad = !especialidad || 
-                                          cardEspecialidad === especialidad;
-
-                if (matchesSearch && matchesEspecialidad) {
-                    card.style.display = '';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-
-            // Mostrar mensaje si no hay resultados
-            const visibleCards = document.querySelectorAll('.medico-card[style=""]').length;
-            const noResultsMessage = document.querySelector('.no-results');
-            
-            if (visibleCards === 0) {
-                if (!noResultsMessage) {
-                    const message = document.createElement('div');
-                    message.className = 'col-12 text-center py-5 no-results';
-                    message.innerHTML = `
-                        <i class="bi bi-search display-1 text-muted mb-3"></i>
-                        <h4 class="text-muted">No se encontraron médicos</h4>
-                        <p class="text-muted">Intenta con otros filtros de búsqueda.</p>
-                    `;
-                    document.getElementById('medicosGrid').appendChild(message);
-                }
-            } else if (noResultsMessage) {
-                noResultsMessage.remove();
-            }
-        }
-
-        searchInput.addEventListener('input', filterMedicos);
-        especialidadFilter.addEventListener('change', filterMedicos);
-    });
-</script>
 {% endblock %}

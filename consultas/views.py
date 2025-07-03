@@ -7,17 +7,14 @@ from .services.ConsultaService import ConsultaService
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from consultas.models import Consulta
+from usuarios.models import Usuario
 
-@method_decorator(login_required, name='dispatch')
-class ConsultaDetailView(DetailView):
-    model = Consulta
-    template_name = "consultas/detalle.html"
-    context_object_name = "consulta"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['usuario'] = self.request.user
-        return context
+@login_required
+def consulta_list_view(request):
+    context = {
+        'consultas' : ConsultaService.listar_consultas_por_paciente(request.user.id)
+    }
+    return render(request, 'consultas/lista.html', context)
 
 @login_required
 def consulta_detalle(request, pk):

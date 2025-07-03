@@ -13,6 +13,8 @@
     100% { opacity: 0; }
 }
 
+
+/* Estilos NavBar */
 .navbar {
     background-color: #6f42c1 !important;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -61,15 +63,8 @@
     border: 2px solid white;
 }
 
-@media (max-width: 991.98px) {
-    .navbar-collapse {
-        background: rgba(111, 66, 193, 0.95);
-        padding: 1rem;
-        border-radius: 8px;
-        margin-top: 0.5rem;
-    }
-}
 
+/* Estilos Formularios */
 .form-card {
     border: none;
     box-shadow: 0 0 20px rgba(0,0,0,0.1);
@@ -90,10 +85,8 @@
     border-left : 4px solid #6f42c1;
 }
 
-.footer {
-    background-color: #6f42c1;
-    color: white;
-    padding: 1rem;
+.form-control:focus + .input-group-text {
+    border-color: #6f42c1;
 }
 
 .btn-primary {
@@ -117,10 +110,6 @@
 }
 
 
-.form-control:focus + .input-group-text {
-    border-color: #6f42c1;
-}
-
 /* Nuevos estilos personalizados */
 .custom-purple-badge {
     background-color: #6f42c1;
@@ -139,7 +128,22 @@
 }
 
 .hover-shadow:hover {
-        transform: translateY(-5px);
-        transition: transform 0.3s ease;
-        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
-    }
+    transform: translateY(-5px);
+    transition: transform 0.3s ease;
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+}
+
+/* Colores */
+.text-purple {
+    color: #6f42c1 !important;
+}
+
+.bg-purple {
+    background-color: #6f42c1 !important;
+}
+
+.footer {
+    background-color: #6f42c1;
+    color: white;
+    padding: 1rem;
+}
