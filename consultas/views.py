@@ -52,11 +52,10 @@ def crear_consulta(request, pk=None):
         if pk:
             # Actualizar consulta existente
             ConsultaService.actualizar_consulta(
-                consulta_id=pk,
+                pk=pk,
                 fecha=fecha,
                 hora=hora,
-                descripcion=descripcion,
-                medico=medico_id
+                descripcion=descripcion
             )
             messages.success(request, 'Consulta actualizada correctamente')
         else:

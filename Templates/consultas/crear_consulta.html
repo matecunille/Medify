@@ -44,8 +44,15 @@
                             <label class="form-label">
                                 <i class="bi bi-calendar3 me-2"></i>Fecha
                             </label>
-                            <input placeholder="Fecha" type="date" class="form-control" name="fecha" value="{% if consulta %}{{consulta.fecha}}{% else %}{{fecha}}{% endif %}">
-                        </div>
+                            <input type="date" 
+                                placeholder="Fecha"
+                                name="fecha" 
+                                id="fecha" 
+                                class="form-control"
+                                value="{% if consulta %}{{ consulta.fecha|date:'Y-m-d' }}{% elif fecha %}{{ fecha }}{% endif %}"
+                                min="{% now 'Y-m-d' %}"
+                                required>
+                            </div>
 
                         <div class="mb-3">
                             <label class="form-label">
