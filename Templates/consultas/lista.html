@@ -3,21 +3,93 @@
 {% block title %}Consultas{% endblock %}
 
 {% block content %}
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
-    <div class="container mt-4">
-        <h2 class="mb-4 mt-4 text-purple">Consultas</h2>
-        {% if consultas %}
-            <ul class="list-group">
-                {% for consulta in consultas %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <a href="{% url 'detalle_consulta' consulta.pk %}" class="text-decoration-none">
-                            {{ consulta.fecha }} - {{ consulta.paciente }}
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <div class="alert alert-info">No hay consultas.</div>
-        {% endif %}
-    </div>
+<div class="container py-4">
+    {% if consultas %}
+        <div class="row g-4">
+            {% for consulta in consultas %}
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white border-0 pb-0 d-flex justify-content-between align-items-center">
+                        <span class="badge rounded-pill 
+                            {% if consulta.estado == 'pendiente' %}bg-warning text-dark
+                            {% elif consulta.estado == 'concluida' %}bg-success
+                            {% else %}bg-secondary
+                            {% endif %}">
+                            {{ consulta.estado }}
+                        </span>
+                        <small class="text-muted">{{ consulta.fecha|date:"d M Y" }}</small>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3" style="width: 40px; height: 40px;">
+                                {% if consulta %}
+                                    <img src="{{ consulta.medico.foto.url }}" 
+                                        alt="Foto del médico" 
+                                        class="img-fluid rounded-circle h-100 w-100"
+                                        style="object-fit: cover;">
+                                {% endif %}
+                            </div>
+                            <div>
+                                <h5 class="mb-0">{% if consulta %}{{ consulta.medico.get_full_name }}{% else %}{{medico_preseleccionado.get_full_name}}{% endif %}</h5>
+                                <small class="text-muted">Médico</small>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3" style="width: 40px; height: 40px;">
+                                {% if consulta %}
+                                    <img src="{{ consulta.paciente.foto.url }}" 
+                                        alt="Foto del médico" 
+                                        class="img-fluid rounded-circle h-100 w-100"
+                                        style="object-fit: cover;">
+                                {% endif %}
+                            </div>
+                            <div>
+                                <h5 class="mb-0">{% if consulta %}{{ consulta.paciente.get_full_name }}{% else %}ERROR{% endif %}</h5>
+                                <small class="text-muted">Paciente</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="text-purple mb-2"><i class="far fa-clock me-2"></i>Hora: {{ consulta.hora }}</h6>
+                            <div class="p-3 bg-light rounded">
+                                <p class="mb-0">{{ consulta.descripcion }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-0 pt-0">
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'detalle_consulta' consulta.id %}" class="bg-purple btn">
+                                <i class="text-white me-1">Ver Detalles</i> 
+                            </a>
+                            {% if consulta.estado == 'pendiente' %}
+                            <div>
+                                <a href="{% url 'crear_consulta' consulta.id %}" class="btn btn-outline-warning me-2">
+                                    <i class="me-1"></i> Editar
+                                </a>
+                                <a href="{% url 'cancelar_consulta' consulta.id %}" class="btn btn-outline-danger">
+                                    <i class="me-1"></i> Cancelar
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <div class="bg-light rounded-circle p-4 d-inline-block mb-3">
+                <i class="fas fa-calendar-times fa-3x text-muted"></i>
+            </div>
+            <h4 class="mb-3">No hay consultas registradas</h4>
+            <p class="text-muted mb-4">No se encontraron consultas médicas en el sistema.</p>
+            <a href="{% url 'detalle_consulta' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i> Agregar Nueva Consulta
+            </a>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

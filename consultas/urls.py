@@ -5,5 +5,6 @@ urlpatterns = [
     path('<int:pk>/', consulta_detalle, name='detalle_consulta'),
     path('<int:pk>/cancelar/', cancelar_consulta, name='cancelar_consulta'),
     path('crear/', crear_consulta, name='crear_consulta'),
+    path('crear/<int:pk>', crear_consulta, name='crear_consulta'),
     path('listar/', consulta_list_view, name='consultas')
 ]

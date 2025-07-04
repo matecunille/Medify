@@ -1,13 +1,13 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from django.utils.decorators import method_decorator
-from django.views.generic import ListView, DetailView
-from usuarios.services import UsuarioService
-from .services.ConsultaService import ConsultaService
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
+from django.contrib import messages
+from django.core.exceptions import ValidationError
+
 from consultas.models import Consulta
 from usuarios.models import Usuario
+from usuarios.services import UsuarioService
+from .services.ConsultaService import ConsultaService
 
 @login_required
 def consulta_list_view(request):
@@ -37,34 +37,59 @@ def cancelar_consulta(request, pk):
     return render(request, 'consultas/cancelar.html', {'consulta': consulta})
 
 @login_required
-def crear_consulta(request):
+def crear_consulta(request, pk=None):
+    consulta = None
+
+    if pk:
+        consulta = get_object_or_404(Consulta, id=pk)
+
     if request.method == 'POST':
         fecha = request.POST.get('fecha')
         hora = request.POST.get('hora')
         descripcion = request.POST.get('descripcion')
-        paciente_id = request.user.id
         medico_id = request.POST.get('medico')
 
-        ConsultaService.crear_consulta(fecha=fecha,hora= hora,descripcion= descripcion, paciente= paciente_id,medico= medico_id)
+        if pk:
+            # Actualizar consulta existente
+            ConsultaService.actualizar_consulta(
+                consulta_id=pk,
+                fecha=fecha,
+                hora=hora,
+                descripcion=descripcion,
+                medico=medico_id
+            )
+            messages.success(request, 'Consulta actualizada correctamente')
+        else:
+            # Crear nueva consulta
+            ConsultaService.crear_consulta(
+                fecha=fecha,
+                hora=hora,
+                descripcion=descripcion,
+                paciente=request.user.id,
+                medico=medico_id
+            )
+            messages.success(request, 'Consulta creada correctamente')
 
         return redirect('home')
-
-    fecha_param = request.GET.get('fecha')
-    medico_id = request.GET.get('medico_id')
+    
+    fecha_param = request.GET.get('fecha') 
+    medico_id = request.GET.get('medico_id') 
     medico_preseleccionado = None
     horarios_disponibles = []
 
     if medico_id and fecha_param:
-            medico_preseleccionado = UsuarioService.obtener_por_id(medico_id)
-            print('Medico: ' + medico_preseleccionado.first_name)
-            if medico_preseleccionado.rol != "medico":
-                medico_preseleccionado = None
-            else:
-                horarios_disponibles = UsuarioService.obtener_horarios_disponibles(medico_id, fecha_param)
-                
-    context = {
-        'fecha': fecha_param,
-        'medico_preseleccionado': medico_preseleccionado,
-        'horarios_disponibles': horarios_disponibles,
-    }
+        medico_preseleccionado = UsuarioService.obtener_por_id(medico_id)
+        horarios_disponibles = UsuarioService.obtener_horarios_disponibles(medico_id, fecha_param)
+        context = {
+            'fecha': fecha_param,
+            'medico_preseleccionado': medico_preseleccionado,
+            'horarios_disponibles': horarios_disponibles,
+        }
+    else:
+        horarios_disponibles = UsuarioService.obtener_horarios_disponibles(consulta.medico.id, consulta.fecha)
+        context = {
+            'consulta': consulta,  
+            'horarios_disponibles' : horarios_disponibles
+        }      
+    
     return render(request, 'consultas/crear_consulta.html', context)
