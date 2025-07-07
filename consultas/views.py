@@ -58,6 +58,7 @@ def crear_consulta(request, pk=None):
                 descripcion=descripcion
             )
             messages.success(request, 'Consulta actualizada correctamente')
+            return redirect('consultas')
         else:
             # Crear nueva consulta
             ConsultaService.crear_consulta(
@@ -68,8 +69,8 @@ def crear_consulta(request, pk=None):
                 medico=medico_id
             )
             messages.success(request, 'Consulta creada correctamente')
-
-        return redirect('home')
+            return redirect('home')
+        
     
     fecha_param = request.GET.get('fecha') 
     medico_id = request.GET.get('medico_id') 

@@ -41,6 +41,7 @@ urlpatterns = [
     path('', home , name='home'),
     path('admin/', admin.site.urls),
     path('consultas/',include('consultas.urls')),
+    path('api/', include('consultas.api_urls')),
     path('usuarios/',include('usuarios.urls')),
 ]
 

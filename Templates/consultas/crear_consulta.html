@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Agendar Consulta{% endblock %}
+{% block title %}{% if consulta %}Editar Consulta{% else %}Agendar Consulta{% endif %}{% endblock %}
 
 {% block content %}
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
@@ -9,7 +9,7 @@
         <div class="card form-card mb-4 shadow-sm">
             <div class="card-header">
                     <h4 class="mb-0 text-white text-center">
-                        <i class="bi bi-calendar2-plus-fill me-2"></i>Agendar consulta
+                        <i class="bi bi-calendar2-plus-fill me-2"></i>{% if consulta %}Editar Consulta{% else %}Agendar Consulta{% endif %}
                     </h4>
             </div>
             <div class="card-body form-section">
@@ -29,16 +29,18 @@
                     {% endif %}
                 {% else %}
                     <div class="text-center">
-                        <img src="{% if medico_preseleccionado.foto %}{{ medico_preseleccionado.foto.url }}{% else %}{% static 'img/default.jpg' %}{% endif %}"
-                             class="rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;"
+                        <img src="{% if consulta %}{{consulta.medico.foto.url}}{% else %}{{ medico_preseleccionado.foto.url }}{% endif %}"
+                             class="rounded-circle mb-3" 
+                             style="width: 100px; height: 100px; object-fit: cover;"
                              alt="Foto del médico">
                         <h5>Dr. {% if consulta %}{{consulta.medico.get_full_name}}{% else %}{{ medico_preseleccionado.get_full_name }}{% endif %}</h5>
-                        <p class="text-muted">{{ medico_preseleccionado.especialidad }}</p>
+                        <p class="text-muted">{% if consulta %}{{consulta.medico.especialidad}}{% else %}{{ medico_preseleccionado.especialidad }}{% endif %}
+                        </p>
                     </div>
 
                     <form method="post">
                         {% csrf_token %}
-                        <input type="hidden" name="medico" value="{% if consulta %}{{consulta.medico.id}}{% else %}{{ medico_preseleccionado.id }}{% endif %}">
+                        <input type="hidden" id="medico" name="medico" value="{% if consulta %}{{consulta.medico.id}}{% else %}{{ medico_preseleccionado.id }}{% endif %}">
 
                         <div class="mb-3">
                             <label class="form-label">
@@ -51,17 +53,32 @@
                                 class="form-control"
                                 value="{% if consulta %}{{ consulta.fecha|date:'Y-m-d' }}{% elif fecha %}{{ fecha }}{% endif %}"
                                 min="{% now 'Y-m-d' %}"
-                                required>
+                                required
+                                data-fecha-original="{% if consulta %}{{ consulta.fecha|date:'Y-m-d' }}{% elif fecha %}{{ fecha }}{% endif %}">
                             </div>
 
                         <div class="mb-3">
                             <label class="form-label">
                                 <i class="bi bi-clock me-2"></i>Hora
                             </label>
-                            <select title="Horario" class="form-select" name="hora" required>
-                                <option value="{{consulta.hora}}" disabled selected>{% if consulta %}{{consulta.hora}}{% else %}Seleccionar horario{% endif %}</option>
+                            <select title="Horario" class="form-select" name="hora" id="horario" required
+                                    data-hora-original="{% if consulta %}{{ consulta.hora }}{% endif %}">
+                                {% if not consulta %}
+                                    <option disabled selected>Seleccionar horario</option>
+                                {% endif %}
+
+                                {# Opción original si no está en la lista #}
+                                {% if consulta and consulta.hora not in horarios_disponibles %}
+                                    <option value="{{ consulta.hora }}" selected>{{ consulta.hora }}</option>
+                                {% endif %}
+
                                 {% for turno in horarios_disponibles %}
-                                    <option value="{{ turno }}">{{ turno }}</option>
+                                    <option value="{{ turno }}"
+                                            {% if consulta and turno == consulta.hora %}
+                                                selected
+                                            {% endif %}>
+                                        {{ turno }}
+                                    </option>
                                 {% endfor %}
                             </select>
                             <div class="invalid-feedback">
@@ -79,7 +96,7 @@
 
                         <div class="d-flex justify-content-between align-items-center mt-4">
                             <a href="{% url 'home' %}" class="btn btn-outline-secondary">
-                                <i class="bi bi-arrow-left me-2"></i>Cancelar
+                                <i class="bi bi-arrow-left me-2"></i>Volver
                             </a>
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-calendar-check me-2"></i>Confirmar turno
@@ -91,4 +108,67 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const fechaInput = document.getElementById("fecha");
+  const horarioSelect = document.getElementById("horario");
+  const medicoInput = document.getElementById("medico");
+
+  if (!fechaInput || !horarioSelect || !medicoInput) return;
+
+  const medicoId = medicoInput.value;
+  const fechaOriginal = fechaInput.dataset.fechaOriginal;
+  const horaOriginal = horarioSelect.dataset.horaOriginal;
+
+  fechaInput.addEventListener("change", async () => {
+    const fecha = fechaInput.value;
+    if (!fecha || !medicoId) return;
+
+    const response = await fetch(`/api/horarios-disponibles/?fecha=${fecha}&medico=${medicoId}`);
+    if (!response.ok) {
+      alert("No se pudieron obtener los horarios disponibles");
+      return;
+    }
+
+    const data = await response.json();
+    horarioSelect.innerHTML = "";
+
+    if (data.horarios.length === 0 && fecha !== fechaOriginal) {
+      const option = document.createElement("option");
+      option.textContent = "No hay horarios disponibles";
+      option.disabled = true;
+      option.selected = true;
+      horarioSelect.appendChild(option);
+      return;
+    }
+
+    const placeholder = document.createElement("option");
+    placeholder.textContent = "Seleccionar horario";
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    horarioSelect.appendChild(placeholder);
+
+    data.horarios.forEach(hora => {
+      const option = document.createElement("option");
+      option.value = hora;
+      option.textContent = hora;
+      horarioSelect.appendChild(option);
+    });
+
+    // Si volvió a la fecha original, agregamos el horario original como opción extra
+    if (fecha === fechaOriginal && horaOriginal) {
+      const yaExiste = [...horarioSelect.options].some(opt => opt.value === horaOriginal);
+      if (!yaExiste) {
+        const originalOption = document.createElement("option");
+        originalOption.value = horaOriginal;
+        originalOption.textContent = `${horaOriginal} (original)`;
+        originalOption.selected = true;
+        horarioSelect.appendChild(originalOption);
+      }
+    }
+  });
+});
+
+</script>
 {% endblock %}
