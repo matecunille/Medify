@@ -30,13 +30,13 @@
                         </a>
                     </li>
 
-                    {% if request.user.rol == 'paciente' %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'consultas' %}">
-                                <i class="bi bi-calendar2-check"></i> Mis Consultas
-                            </a>
-                        </li>
-                    {% endif %}
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'consultas' %}">
+                            <i class="bi bi-calendar2-check"></i>{% if request.user.rol == "medico" %} Todas mis consultas{% else %}Mis Consultas{% endif %}
+                        </a>
+                    </li>
+                   
 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" 

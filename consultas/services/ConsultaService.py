@@ -38,3 +38,9 @@ class ConsultaService:
         consulta.estado = ESTADO_CANCELADO
         ConsultaRepository.actualizar(consulta.pk, estado=consulta.estado)
         return
+    
+    @staticmethod
+    def concluir_consulta(consulta):
+        consulta.estado = "Concluida"
+        ConsultaRepository.actualizar(consulta.pk, estado=consulta.estado)
+        return

@@ -11,9 +11,14 @@ from .services.ConsultaService import ConsultaService
 
 @login_required
 def consulta_list_view(request):
-    context = {
-        'consultas' : ConsultaService.listar_consultas_por_paciente(request.user.id)
-    }
+    if request.user.rol == "medico":
+        context = {
+            'consultas' : ConsultaService.obtener_consultas_por_medico(request.user.id)
+        }
+    else:
+        context = {
+            'consultas' : ConsultaService.listar_consultas_por_paciente(request.user.id)
+        }
     return render(request, 'consultas/lista.html', context)
 
 @login_required
@@ -31,10 +36,18 @@ def consulta_detalle(request, pk):
 @login_required
 def cancelar_consulta(request, pk):
     consulta = ConsultaService.obtener_consulta_por_id(pk)
-    if request.method == 'POST':
+    if consulta:
         ConsultaService.cancelar_consulta(consulta)
         return redirect('home')
-    return render(request, 'consultas/cancelar.html', {'consulta': consulta})
+    return redirect('home')
+
+@login_required
+def concluir_consulta(request, pk):
+    consulta = ConsultaService.obtener_consulta_por_id(pk)
+    if consulta:
+        ConsultaService.concluir_consulta(consulta)
+        return redirect('home')
+    return redirect('home')
 
 @login_required
 def crear_consulta(request, pk=None):

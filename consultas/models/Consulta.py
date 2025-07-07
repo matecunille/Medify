@@ -13,10 +13,11 @@ HORARIOS_CHOICES = [
 ]
 
 ESTADO_CANCELADO = 'cancelada'
+ESTADO_CONCLUIDA = 'Concluida'
 
 ESTADOS_CHOICES = [
     ('pendiente', 'Pendiente'),
-    ('concluida', 'Concluida'),
+    (ESTADO_CONCLUIDA, 'Concluida'),
     (ESTADO_CANCELADO, 'Cancelada'),
 ]
 

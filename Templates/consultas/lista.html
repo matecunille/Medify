@@ -65,11 +65,14 @@
                             </a>
                             {% if consulta.estado == 'pendiente' %}
                             <div>
+                                <a href="{% url 'concluir_consulta' consulta.id %}" class="btn btn-outline-success me-2">
+                                    <i class="me-1 bi-check2"></i> Concluir
+                                </a>
                                 <a href="{% url 'crear_consulta' consulta.id %}" class="btn btn-outline-warning me-2">
-                                    <i class="me-1"></i> Editar
+                                    <i class="me-1 bi-pen"></i> Editar
                                 </a>
                                 <a href="{% url 'cancelar_consulta' consulta.id %}" class="btn btn-outline-danger">
-                                    <i class="me-1"></i> Cancelar
+                                    <i class="me-1 bi-x-circle"></i> Cancelar
                                 </a>
                             </div>
                             {% endif %}
