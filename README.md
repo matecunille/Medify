@@ -19,16 +19,7 @@ Este proyecto es una aplicación web desarrollada en Django para la gestión de 
 
    Crear la base de datos manualmente, debido a que django no la crea automaticamente, usar DataGrip, MySQLWorkBench o bien atraves del shell de MySQL.
 
-2. **Crear entorno virtual**
-
-   python -m venv venv
-
-   ## Activar entorno virtual
-
-   Windows: source venv\Scripts\activate
-   MacOS: source venv/bin/activate
-
-3. **Configurar variables de entorno**
+2. **Configurar variables de entorno**
 
    Modificar el archivo `.env` en la raíz del proyecto(dentro de Programacion_3) con el siguiente contenido:
 
@@ -39,20 +30,20 @@ Este proyecto es una aplicación web desarrollada en Django para la gestión de 
    DEBUG=TRUE
    ```
 
-4. **Instalar dependencias**
+3. **Instalar dependencias**
 
    ```bash
    pip install -r requirements.txt
    ```
 
-5. **Aplicar migraciones**
+4. **Aplicar migraciones a la base de datos**
 
    ```bash
    python manage.py makemigrations
    python manage.py migrate
    ```
 
-6. **Iniciar el servidor**
+5. **Iniciar la aplicacion**
 
    ```bash
    python manage.py runserver
@@ -61,6 +52,7 @@ Este proyecto es una aplicación web desarrollada en Django para la gestión de 
 ## Como usar
 
 - Accede a la aplicación en [http://localhost:8000](http://localhost:8000)
+- Crear superUser y acceder al admin, posteriormente crear especialidades asi se puede crear un medico
 - Regístrate como paciente o médico para comenzar a gestionar consultas.
 
 ---
