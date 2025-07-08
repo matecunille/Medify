@@ -30,7 +30,7 @@ Este proyecto es una aplicación web desarrollada en Django para la gestión de 
 
 3. **Configurar variables de entorno**
 
-   Crear un archivo `.env` en la raíz del proyecto(dentro de Programacion_3) con el siguiente contenido:
+   Modificar el archivo `.env` en la raíz del proyecto(dentro de Programacion_3) con el siguiente contenido:
 
    ```env
    DATABASE_NAME=nombre_base
