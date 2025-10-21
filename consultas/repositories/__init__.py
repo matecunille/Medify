@@ -1,1 +1,0 @@
-from .ConsultaRepository import ConsultaRepository

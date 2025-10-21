@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Consultation Detail{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card form-card shadow-sm">
+                <div class="card-header">
+                    <h4 class="mb-0 text-white text-center">
+                        <i class="bi bi-clipboard2-pulse me-2"></i>Consultation Detail
+                    </h4>
+                </div>
+                <div class="card-body form-section">
+                    <div class="row mb-4">
+                        <div class="col-md-4 text-center">
+                            <img src="{% if consultation.doctor.photo %}{{ consultation.doctor.photo.url }}{% else %}{% static 'img/default.svg' %}{% endif %}"
+                                 class="rounded-circle mb-3 shadow"
+                                 style="width: 100px; height: 100px; object-fit: cover;"
+                                 alt="Doctor's photo">
+                            <h5 class="mb-1">{{ consultation.doctor.get_full_name }}</h5>
+                            <span class="badge bg-purple">{{ consultation.doctor.specialty }}</span>
+                        </div>
+                        <div class="col-md-8">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <strong>Patient:</strong> {{ consultation.patient.get_full_name }}
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Date:</strong> {{ consultation.date|date:"d/m/Y" }}
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Time:</strong> {{ consultation.time }}
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Status:</strong>
+                                    {% if consultation.status == 'pending' %}
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    {% elif consultation.status == 'completed' %}
+                                        <span class="badge bg-success">Completed</span>
+                                    {% elif consultation.status == 'cancelled' %}
+                                        <span class="badge bg-danger">Cancelled</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ consultation.status|title }}</span>
+                                    {% endif %}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="fw-bold mb-2"><i class="bi bi-chat-left-text me-2"></i>Reason for consultation</h6>
+                        <div class="p-3 rounded bg-light border">{{ consultation.description }}</div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end mt-4">
+                        <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

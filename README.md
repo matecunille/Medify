@@ -1,58 +1,113 @@
-# Sistema de Gestión de Consultas Médicas
+# 🏥 Medify - Medical Consultation System
 
-Este proyecto es una aplicación web desarrollada en Django para la gestión de consultas médicas entre pacientes y médicos.
+A modern Django-based web application for managing medical consultations between doctors and patients.
 
-## Requisitos
+## Features
 
-- asgiref==3.9.0
-- Django==5.2.4
-- django-widget-tweaks==1.5.0
-- mysqlclient==2.2.7
-- pillow==11.3.0
-- python-dotenv==1.1.1
-- sqlparse==0.5.3
-- tzdata==2025.2
+- **User Management**: Separate roles for patients and doctors
+- **Consultation Scheduling**: Easy appointment booking system
+- **Specialty Management**: Organize doctors by medical specialties
+- **Responsive Design**: Modern Bootstrap-based UI
+- **Docker Ready**: Containerized deployment
+- **Admin Interface**: Built-in Django admin for system management
 
-## Configuración Inicial
+## Technology Stack
 
-1. **Crear la base de datos**
+- **Backend**: Django 5.2.4
+- **Database**: MySQL 8.0
+- **Frontend**: Django templates and Bootstrap 5.3
+- **Containerization**: Docker & Docker Compose
+- **Static Files**: WhiteNoise for efficient serving
+- **Authentication**: Django built-in authentication system
 
-   Crear la base de datos manualmente, debido a que django no la crea automaticamente, usar DataGrip, MySQLWorkBench o bien atraves del shell de MySQL.
+## Project Structure
 
-2. **Configurar variables de entorno**
+```
+medical-consultation-system/
+├── README.md
+├── requirements.txt
+├── .gitignore
+├── docker/
+│   ├── Dockerfile
+│   ├── docker-compose.yml
+│   └── entrypoint.sh
+├── docs/
+└── src/
+    ├── manage.py
+    ├── config/          # Django settings
+    ├── users/           # User management app
+    ├── consultations/   # Consultation management app
+    ├── templates/       # HTML templates
+    └── static/          # CSS, JS, images
+```
 
-   Modificar el archivo `.env` en la raíz del proyecto(dentro de Programacion_3) con el siguiente contenido:
+## Development Setup
 
-   ```env
-   DATABASE_NAME=nombre_base
-   DATABASE_USER=usuario
-   DATABASE_PASSWORD=password
-   DEBUG=TRUE
-   ```
+### Prerequisites
 
-3. **Instalar dependencias**
+- Docker & Docker Compose
+- Git
+
+### Quick Start
+
+1. **Clone the repository**
 
    ```bash
-   pip install -r requirements.txt
+   git clone https://github.com/matecunille/Programacion_3.git
+   cd Programacion_3
    ```
 
-4. **Aplicar migraciones a la base de datos**
+2. **Environment Configuration**
 
    ```bash
-   python manage.py makemigrations
-   python manage.py migrate
+   cp src/.env.example src/.env
+   # Edit .env with your database credentials
    ```
 
-5. **Iniciar la aplicacion**
+3. **Run with Docker**
 
    ```bash
-   python manage.py runserver
+   cd docker
+   docker-compose up --build
    ```
 
-## Como usar
+4. **Access the application**
+   - Application: <http://localhost:8000>
+   - Admin Panel: <http://localhost:8000/admin>
 
-- Accede a la aplicación en [http://localhost:8000](http://localhost:8000)
-- Crear superUser y acceder al admin, posteriormente crear especialidades asi se puede crear un medico
-- Regístrate como paciente o médico para comenzar a gestionar consultas.
+## 🏃‍♂️ Usage
 
----
+### For Patients
+
+- Register with patient role
+- Browse available doctors by specialty
+- Schedule consultations
+- View consultation history
+
+### For Doctors
+
+- Register with doctor role and specialty
+- View assigned consultations
+- Update consultation status
+- Manage patient appointments
+
+### For Administrators
+
+- Access Django admin panel
+- Manage users, specialties, and consultations
+- System configuration and monitoring
+
+## 🔧 Environment Variables
+
+Create a `.env` file in the `src/` directory:
+
+```env
+DEBUG=True
+SECRET_KEY=your-secret-key-here
+DB_NAME=medify_db
+DB_USER=medify_user
+DB_PASSWORD=your-db-password
+DB_HOST=db
+DB_PORT=3306
+DB_ROOT_PASSWORD=your-root-password
+```

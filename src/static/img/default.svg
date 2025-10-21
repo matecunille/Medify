@@ -1,0 +1,6 @@
+<!-- Default user image placeholder - SVG -->
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="100" height="100" rx="50" fill="#6f42c1"/>
+<path d="M50 30C46.134 30 43 33.134 43 37C43 40.866 46.134 44 50 44C53.866 44 57 40.866 57 37C57 33.134 53.866 30 50 30Z" fill="white"/>
+<path d="M67 65C67 58.925 61.075 54 55 54H45C38.925 54 33 58.925 33 65V70H67V65Z" fill="white"/>
+</svg>

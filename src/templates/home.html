@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    Home - Medify
+{% endblock %}
+
+{% block content %}
+<div class="container home-section mt-4">
+    {% if user.role == "doctor" %}
+        {% if consultations %}
+            <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="home-title text-purple"><strong>Pending Consultations</strong></h2>
+                </div>
+            </div>
+        </div>
+
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+                {% for consultation in consultations %}
+                    <div class="col">
+                        <div class="card home-card h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <h5 class="card-title mb-1">{{ consultation.patient.get_full_name }}</h5>
+                                        <p class="text-muted small mb-0">
+                                            <span class="home-icon"><i class="bi bi-calendar-event me-1"></i></span>{{ consultation.date|date:"d/m/Y" }}
+                                        </p>
+                                    </div>
+                                    <span class="badge custom-purple-badge rounded-pill">
+                                        <i class="bi bi-clock me-1"></i>{{ consultation.time }}
+                                    </span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="btn-group">
+                                        <a href="{% url 'consultation_detail' consultation.id %}" class="btn home-btn custom-outline-purple">
+                                            <i class="bi bi-eye me-1"></i>View details
+                                        </a>
+                                    </div>
+                                    <div class="dropdown">
+                                        <button class="btn btn-link text-dark" type="button" data-bs-toggle="dropdown">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li>
+                                                <a href="{% url 'complete_consultation' consultation.id %}" class="btn btn-outline-success me-2 dropdown-item text-success">
+                                                    <i class="me-1 bi bi-check2"></i> Complete
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{% url 'create_consultation' consultation.id %}" class="btn btn-outline-warning me-2 dropdown-item text-warning">
+                                                    <i class="me-1 bi bi-pen"></i> Edit
+                                                </a>
+                                            </li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-x-circle me-2"></i>Cancel</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <span class="home-icon"><i class="bi bi-calendar-x display-1 text-muted mb-3"></i></span>
+                <h4 class="text-muted">No pending consultations</h4>
+                <p class="text-muted">Pending consultations will appear here.</p>
+            </div>
+        {% endif %}
+
+    {% elif user.role == "patient" %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="home-title text-purple"><strong>Available Doctors</strong></h2>
+                </div>
+            </div>
+        </div>
+
+        {% if doctors %}
+            <div class="row row-cols-1 row-cols-md-3 g-4" id="doctorsGrid">
+                {% for doctor in doctors %}
+                    <div class="col doctor-card" 
+                         data-name="{{ doctor.get_full_name|lower }}" 
+                         data-specialty="{{ doctor.specialty|lower }}">
+                        <div class="card home-card h-100 hover-shadow">
+                            <div class="position-relative">
+                                {% if doctor.photo %}
+                                    <img src="{{ doctor.photo.url }}" class="card-img-top" alt="doctor image" style="height: 200px; object-fit: cover;">
+                                {% else %}
+                                    <img src="{% static 'img/default.svg' %}" class="card-img-top" alt="doctor image" style="height: 200px; object-fit: cover;">
+                                {% endif %}
+                                <div class="position-absolute bottom-0 start-0 w-100 bg-dark bg-opacity-50 text-white p-2">
+                                    <h5 class="card-title mb-0">Dr. {{ doctor.get_full_name }}</h5>
+                                    <small>{{ doctor.specialty }}</small>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">
+                                    <i class="bi bi-hospital me-2 home-icon"></i>{{ doctor.specialty }}
+                                </p>
+                                <hr>
+                                <div class="d-grid">
+                                    <a href="{% url 'create_consultation' %}?doctor_id={{ doctor.id }}&date={{ today }}"
+                                       class="btn home-btn btn-primary">
+                                        <i class="bi bi-calendar-plus me-2"></i>Schedule Consultation
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12">
+                        <div class="text-center py-5">
+                            <i class="bi bi-emoji-frown display-1 text-muted mb-3 home-icon"></i>
+                            <h4 class="text-muted">No doctors available</h4>
+                            <p class="text-muted">Please try again later or contact administration.</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-emoji-frown display-1 text-muted mb-3 home-icon"></i>
+                <h4 class="text-muted">No doctors available</h4>
+                <p class="text-muted">Please try again later or contact administration.</p>
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

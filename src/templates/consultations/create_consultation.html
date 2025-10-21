@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if consultation %}Edit Consultation{% else %}Schedule Consultation{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-md-8 col-lg-6">
+        <div class="card form-card mb-4 shadow-sm">
+            <div class="card-header">
+                    <h4 class="mb-0 text-white text-center">
+                        <i class="bi bi-calendar2-plus-fill me-2"></i>{% if consultation %}Edit Consultation{% else %}Schedule Consultation{% endif %}
+                    </h4>
+            </div>
+            <div class="card-body form-section">
+                {% if not available_times %}
+                    {% if preselected_doctor %}
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            No available time slots for Dr. {{ preselected_doctor.get_full_name }} on {{ date }}.
+                        </div>
+                    {% else %}
+                        <div class="alert alert-danger">
+                            <i class="bi bi-x-circle me-2"></i>
+                            No valid doctor found. 
+                            <hr>
+                            <a href="{% url 'home' %}" class="btn btn-outline-danger">Back to Home</a>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="text-center">
+                        {% if consultation and consultation.doctor.photo %}
+                            <img src="{{ consultation.doctor.photo.url }}"
+                                 class="rounded-circle mb-3" 
+                                 style="width: 100px; height: 100px; object-fit: cover;"
+                                 alt="Doctor's photo">
+                        {% elif preselected_doctor.photo %}
+                            <img src="{{ preselected_doctor.photo.url }}"
+                                 class="rounded-circle mb-3" 
+                                 style="width: 100px; height: 100px; object-fit: cover;"
+                                 alt="Doctor's photo">
+                        {% else %}
+                            <img src="{% static 'img/default.svg' %}"
+                                 class="rounded-circle mb-3" 
+                                 style="width: 100px; height: 100px; object-fit: cover;"
+                                 alt="Default profile photo">
+                        {% endif %}
+                        <h5>Dr. {% if consultation %}{{consultation.doctor.get_full_name}}{% else %}{{ preselected_doctor.get_full_name }}{% endif %}</h5>
+                        <p class="text-muted">{% if consultation %}{{consultation.doctor.specialty}}{% else %}{{ preselected_doctor.specialty }}{% endif %}
+                        </p>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" id="doctor" name="doctor" value="{% if consultation %}{{consultation.doctor.id}}{% else %}{{ preselected_doctor.id }}{% endif %}">
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-calendar3 me-2"></i>Date
+                            </label>
+                            <input type="date" 
+                                placeholder="Date"
+                                name="date" 
+                                id="date" 
+                                class="form-control"
+                                value="{% if consultation %}{{ consultation.date|date:'Y-m-d' }}{% elif date %}{{ date }}{% endif %}"
+                                min="{% now 'Y-m-d' %}"
+                                required
+                                data-fecha-original="{% if consultation %}{{ consultation.date|date:'Y-m-d' }}{% elif date %}{{ date }}{% endif %}">
+                            </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-clock me-2"></i>Time
+                            </label>
+                            <select title="Time Slot" class="form-select" name="time" id="time" required
+                                    data-hora-original="{% if consultation %}{{ consultation.time }}{% endif %}">
+                                {% if not consultation %}
+                                    <option disabled selected>Select time slot</option>
+                                {% endif %}
+
+                                {# Opción original si no está en la lista #}
+                                {% if consultation and consultation.time not in available_times %}
+                                    <option value="{{ consultation.time }}" selected>{{ consultation.time }}</option>
+                                {% endif %}
+
+                                {% for slot in available_times %}
+                                    <option value="{{ slot }}"
+                                            {% if consultation and slot == consultation.time %}
+                                                selected
+                                            {% endif %}>
+                                        {{ slot }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select a time slot
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-chat-left-text me-2"></i>Reason for consultation
+                            </label>
+                            <textarea class="form-control" name="description" rows="3" required 
+                                      placeholder="Briefly describe the reason for your consultation">{% if consultation %}{{consultation.description}}{% endif %}</textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Back
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-calendar-check me-2"></i>Confirm appointment
+                            </button>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const dateInput = document.getElementById("date");
+  const timeSelect = document.getElementById("time");
+  const doctorInput = document.getElementById("doctor");
+
+  if (!dateInput || !timeSelect || !doctorInput) return;
+
+  const doctorId = doctorInput.value;
+  const originalDate = dateInput.dataset.fechaOriginal;
+  const originalTime = timeSelect.dataset.horaOriginal;
+
+  dateInput.addEventListener("change", async () => {
+    const date = dateInput.value;
+    if (!date || !doctorId) return;
+
+    const response = await fetch(`/api/available-times/?date=${date}&doctor=${doctorId}`);
+    if (!response.ok) {
+      alert("Could not get available time slots");
+      return;
+    }
+
+    const data = await response.json();
+    timeSelect.innerHTML = "";
+
+    if (data.available_times.length === 0 && date !== originalDate) {
+      const option = document.createElement("option");
+      option.textContent = "No available time slots";
+      option.disabled = true;
+      option.selected = true;
+      timeSelect.appendChild(option);
+      return;
+    }
+
+    const placeholder = document.createElement("option");
+    placeholder.textContent = "Select time slot";
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    timeSelect.appendChild(placeholder);
+
+    data.available_times.forEach(time => {
+      const option = document.createElement("option");
+      option.value = time;
+      option.textContent = time;
+      timeSelect.appendChild(option);
+    });
+
+    // Si volvió a la fecha original, agregamos el horario original como opción extra
+    if (date === originalDate && originalTime) {
+      const alreadyExists = [...timeSelect.options].some(opt => opt.value === originalTime);
+      if (!alreadyExists) {
+        const originalOption = document.createElement("option");
+        originalOption.value = originalTime;
+        originalOption.textContent = `${originalTime} (original)`;
+        originalOption.selected = true;
+        timeSelect.appendChild(originalOption);
+      }
+    }
+  });
+});
+
+</script>
+{% endblock %}

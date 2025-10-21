@@ -1,0 +1,92 @@
+[
+    {
+        "model": "users.specialty",
+        "pk": 1,
+        "fields": {
+            "name": "Cardiology",
+            "description": "Medical specialty dealing with disorders of the heart and blood vessels",
+            "active": true
+        }
+    },
+    {
+        "model": "users.specialty",
+        "pk": 2,
+        "fields": {
+            "name": "Dermatology",
+            "description": "Medical specialty dealing with skin, hair, and nail disorders",
+            "active": true
+        }
+    },
+    {
+        "model": "users.specialty",
+        "pk": 3,
+        "fields": {
+            "name": "Neurology",
+            "description": "Medical specialty dealing with nervous system disorders",
+            "active": true
+        }
+    },
+    {
+        "model": "users.specialty",
+        "pk": 4,
+        "fields": {
+            "name": "Pediatrics",
+            "description": "Medical specialty dealing with infants, children, and adolescents",
+            "active": true
+        }
+    },
+    {
+        "model": "users.specialty",
+        "pk": 5,
+        "fields": {
+            "name": "Orthopedics",
+            "description": "Medical specialty dealing with musculoskeletal system disorders",
+            "active": true
+        }
+    },
+    {
+        "model": "users.specialty",
+        "pk": 6,
+        "fields": {
+            "name": "Psychiatry",
+            "description": "Medical specialty dealing with mental health disorders",
+            "active": true
+        }
+    },
+    {
+        "model": "users.specialty",
+        "pk": 7,
+        "fields": {
+            "name": "Gynecology",
+            "description": "Medical specialty dealing with women's health and reproductive system",
+            "active": true
+        }
+    },
+    {
+        "model": "users.specialty",
+        "pk": 8,
+        "fields": {
+            "name": "Ophthalmology",
+            "description": "Medical specialty dealing with eye and vision disorders",
+            "active": true
+        }
+    },
+    {
+        "model": "users.specialty",
+        "pk": 9,
+        "fields": {
+            "name": "General Practice",
+            "description": "Primary healthcare with comprehensive medical care",
+            "active": true
+        }
+    },
+    {
+        "model": "users.specialty",
+        "pk": 10,
+        "fields": {
+            "name": "Internal Medicine",
+            "description": "Medical specialty dealing with adult diseases and conditions",
+            "active": true
+        }
+    }
+]

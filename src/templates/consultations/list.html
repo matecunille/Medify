@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Consultations{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    {% if consultations %}
+        <div class="row g-4">
+            {% for consultation in consultations %}
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white border-0 pb-0 d-flex justify-content-between align-items-center">
+                        <span class="badge rounded-pill 
+                            {% if consultation.status == 'pending' %}bg-warning text-dark
+                            {% elif consultation.status == 'completed' %}bg-success
+                            {% else %}bg-secondary
+                            {% endif %}">
+                            {% if consultation.status == 'pending' %}Pending
+                            {% elif consultation.status == 'completed' %}Completed
+                            {% elif consultation.status == 'cancelled' %}Cancelled
+                            {% else %}{{ consultation.status|title }}
+                            {% endif %}
+                        </span>
+                        <small class="text-muted">{{ consultation.date|date:"d M Y" }}</small>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3" style="width: 40px; height: 40px;">
+                                {% if consultation.doctor.photo %}
+                                    <img src="{{ consultation.doctor.photo.url }}" 
+                                        alt="Doctor's photo" 
+                                        class="img-fluid rounded-circle h-100 w-100"
+                                        style="object-fit: cover;">
+                                {% else %}
+                                    <img src="{% static 'img/default.svg' %}" 
+                                        alt="Default profile photo" 
+                                        class="img-fluid rounded-circle h-100 w-100"
+                                        style="object-fit: cover;">
+                                {% endif %}
+                            </div>
+                            <div>
+                                <h5 class="mb-0">{{ consultation.doctor.get_full_name }}</h5>
+                                <small class="text-muted">Doctor</small>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3" style="width: 40px; height: 40px;">
+                                {% if consultation.patient.photo %}
+                                    <img src="{{ consultation.patient.photo.url }}" 
+                                        alt="Patient's photo" 
+                                        class="img-fluid rounded-circle h-100 w-100"
+                                        style="object-fit: cover;">
+                                {% else %}
+                                    <img src="{% static 'img/default.svg' %}" 
+                                        alt="Default profile photo" 
+                                        class="img-fluid rounded-circle h-100 w-100"
+                                        style="object-fit: cover;">
+                                {% endif %}
+                            </div>
+                            <div>
+                                <h5 class="mb-0">{{ consultation.patient.get_full_name }}</h5>
+                                <small class="text-muted">Patient</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="text-purple mb-2"><i class="far fa-clock me-2"></i>Time: {{ consultation.time }}</h6>
+                            <div class="p-3 bg-light rounded">
+                                <p class="mb-0">{{ consultation.description }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-0 pt-0">
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'consultation_detail' consultation.id %}" class="bg-purple btn">
+                                <i class="text-white me-1">View Details</i> 
+                            </a>
+                            {% if consultation.status == 'pending' %}
+                            <div>
+                                <a href="{% url 'complete_consultation' consultation.id %}" class="btn btn-outline-success me-2">
+                                    <i class="me-1 bi-check2"></i> Complete
+                                </a>
+                                <a href="{% url 'create_consultation' consultation.id %}" class="btn btn-outline-warning me-2">
+                                    <i class="me-1 bi-pen"></i> Edit
+                                </a>
+                                <a href="{% url 'cancel_consultation' consultation.id %}" class="btn btn-outline-danger">
+                                    <i class="me-1 bi-x-circle"></i> Cancel
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <div class="bg-light rounded-circle p-4 d-inline-block mb-3">
+                <i class="fas fa-calendar-times fa-3x text-muted"></i>
+            </div>
+            <h4 class="mb-3">No consultations found</h4>
+            <p class="text-muted mb-4">No medical consultations were found in the system.</p>
+            <a href="{% url 'create_consultation' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i> Add New Consultation
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
