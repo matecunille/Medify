@@ -30,7 +30,8 @@ medical-consultation-system/
 ├── docker/
 │   ├── Dockerfile
 │   ├── docker-compose.yml
-│   └── entrypoint.sh
+│   ├── entrypoint.sh
+│   └─ .env
 ├── docs/
 └── src/
     ├── manage.py
@@ -57,11 +58,11 @@ medical-consultation-system/
    cd Programacion_3
    ```
 
-2. **Environment Configuration**
+2. **Environment Setup**
 
    ```bash
-   cp src/.env.example src/.env
-   # Edit .env with your database credentials
+   cd setup
+   ./setup.sh
    ```
 
 3. **Run with Docker**
@@ -96,18 +97,3 @@ medical-consultation-system/
 - Access Django admin panel
 - Manage users, specialties, and consultations
 - System configuration and monitoring
-
-## 🔧 Environment Variables
-
-Create a `.env` file in the `src/` directory:
-
-```env
-DEBUG=True
-SECRET_KEY=your-secret-key-here
-DB_NAME=medify_db
-DB_USER=medify_user
-DB_PASSWORD=your-db-password
-DB_HOST=db
-DB_PORT=3306
-DB_ROOT_PASSWORD=your-root-password
-```

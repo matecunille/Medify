@@ -1,3 +1,4 @@
+name: medify
 services:
   db:
     image: mysql:8.0
@@ -9,7 +10,6 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     volumes:
-      # Persistir datos de MySQL
       - mysql_data:/var/lib/mysql
     networks:
       - django_network
@@ -27,7 +27,6 @@ services:
     restart: unless-stopped
     command: gunicorn --bind 0.0.0.0:8000 --workers 3 config.wsgi:application
     volumes:
-    # - ../src:/usr/local/app  # ← For development (uncomment if needed)
     - static_volume:/usr/local/app/staticfiles
     - media_volume:/usr/local/app/media
     ports:
