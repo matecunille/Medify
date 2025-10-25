@@ -19,10 +19,17 @@ if ! command -v docker-compose &> /dev/null; then
     exit 1
 fi
 
+# Check if Docker daemon is running/responding
+if ! docker info >/dev/null 2>&1; then
+    echo "❌ Docker does not appear to be running or responding."
+    echo "Please start the Docker daemon (e.g. Docker Desktop) and try again."
+    exit 1
+fi
+
 # Create .env file if it doesn't exist
 if [ ! -f "$PROJECT_ROOT/docker/.env" ]; then
     echo "Creating .env file..."
-    cp "$PROJECT_ROOT/.setup/env.example" "$PROJECT_ROOT/docker/.env"
+    cp "$PROJECT_ROOT/setup/env.example" "$PROJECT_ROOT/docker/.env"
     echo "✅ .env file created with default values"
 else
     echo "✅ .env file already exists"

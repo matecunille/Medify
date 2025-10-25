@@ -32,7 +32,9 @@ medical-consultation-system/
 │   ├── docker-compose.yml
 │   ├── entrypoint.sh
 │   └─ .env
-├── docs/
+├── setup/
+│   ├── env.example
+│   └─ setup.sh 
 └── src/
     ├── manage.py
     ├── config/          # Django settings
