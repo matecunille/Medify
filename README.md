@@ -23,7 +23,7 @@ A modern Django-based web application for managing medical consultations between
 ## Project Structure
 
 ```
-medical-consultation-system/
+Medify/
 ├── README.md
 ├── requirements.txt
 ├── .gitignore
@@ -56,8 +56,8 @@ medical-consultation-system/
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/matecunille/Programacion_3.git
-   cd Programacion_3
+   git clone https://github.com/matecunille/Medify.git
+   cd Medify
    ```
 
 2. **Environment Setup**
